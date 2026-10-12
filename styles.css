@@ -283,7 +283,47 @@ body.drawer-open { overflow: hidden; }
 /* Secret, goals and ability stay sealed until the host reveals them */
 .card.locked :is([data-sec="secret"], [data-sec^="goal"], [data-sec="ability"]) { display: none !important; }
 .card:not(.locked) .sealed-note { display: none; }
-.sealed-note p { color: var(--muted); font-style: italic; }
+.sealed-note {
+  margin: 22px -6px 16px;
+  padding: 24px 22px 22px;
+  text-align: center;
+  color: #f3e3c0;
+  background:
+    repeating-linear-gradient(45deg, transparent 0 10px, rgb(0 0 0 / 12%) 10px 11px),
+    radial-gradient(ellipse at 50% 0%, #6a1a2c, var(--wine-deep) 75%);
+  box-shadow:
+    inset 0 0 0 1px rgb(220 192 138 / 50%),
+    inset 0 0 0 5px var(--wine-deep),
+    inset 0 0 0 6px rgb(220 192 138 / 30%),
+    0 10px 22px rgb(40 0 10 / 35%);
+}
+.sealed-note .sealed-wax {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 14px;
+  font-size: 22px;
+  transform: rotate(-8deg);
+  animation: seal-breathe 3.2s ease-in-out infinite;
+}
+@keyframes seal-breathe { 50% { filter: drop-shadow(0 0 12px rgb(220 192 138 / 55%)); } }
+@media (prefers-reduced-motion: reduce) { .sealed-note .sealed-wax { animation: none; } }
+.sealed-note h3 {
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 10px;
+  color: var(--gold-soft);
+  font-size: 20px;
+  letter-spacing: .24em;
+}
+.sealed-note h3::before,
+.sealed-note h3::after { content: ""; flex: 0 1 56px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold)); }
+.sealed-note h3::after { background: linear-gradient(90deg, var(--gold), transparent); }
+.sealed-note p { color: rgb(243 227 192 / 85%); font-size: 17px; font-style: italic; }
+.sealed-note .unseal-form { max-width: 320px; margin: 18px auto 0; text-align: left; }
+.sealed-note .field span { color: var(--gold-soft); }
+.sealed-note .btn-primary { background: var(--gold); color: var(--wine-deep); border-color: var(--gold-soft); }
+.sealed-note .btn-primary:hover { background: var(--gold-soft); }
+.sealed-note .unseal-error { color: var(--gold-soft); text-align: center; }
 .unseal-form { display: grid; gap: 10px; margin-top: 12px; }
 .unseal-form[hidden] { display: none; }
 .unseal-error { margin: 0; min-height: 1.2em; color: var(--wine); font-style: normal; }
@@ -353,8 +393,9 @@ body.drawer-open { overflow: hidden; }
 
 /* ---------- Минуле персонажа ---------- */
 .lore {
-  margin: 20px -6px 0;
+  margin: 4px -6px 18px;
   border-top: 1px dashed rgb(110 26 43 / 35%);
+  border-bottom: 1px dashed rgb(110 26 43 / 35%);
 }
 .lore summary {
   list-style: none;

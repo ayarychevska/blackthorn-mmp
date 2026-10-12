@@ -141,7 +141,18 @@
 
         <section class="sec" data-sec="who"><h3>Хто це</h3><p data-f="who"></p></section>
         <section class="sec" data-sec="knows"><h3>Що знає</h3><p data-f="knows"></p></section>
+
+        <details class="lore" data-sec="lore">
+          <summary>Минуле персонажа <span class="hint">— життя, події, дрібниці</span></summary>
+          <div class="lore-body">
+            <section class="lore-part" data-part="life"><h4>Життя</h4><p data-f="life"></p></section>
+            <section class="lore-part" data-part="past"><h4>Події з минулого</h4><ol class="timeline" data-list="past"></ol></section>
+            <section class="lore-part" data-part="quirks"><h4>Дрібниці й звички</h4><ul class="quirks" data-list="quirks"></ul></section>
+          </div>
+        </details>
+
         <section class="sec sealed-note">
+          <div class="seal sealed-wax" aria-hidden="true">B</div>
           <h3>Під печаткою</h3>
           <p>Секрет, цілі та особливість відкриються, коли ведуча дасть код печатки.</p>
           <form class="unseal-form" hidden>
@@ -157,15 +168,6 @@
         <section class="sec goal" data-sec="goalMini"><h3>Міні-ціль</h3><p data-f="goalMini"></p></section>
 
         <section class="sec ability" data-sec="ability"><h3>Особливість</h3><p data-f="ability"></p></section>
-
-        <details class="lore" data-sec="lore">
-          <summary>Минуле персонажа <span class="hint">— життя, події, дрібниці</span></summary>
-          <div class="lore-body">
-            <section class="lore-part" data-part="life"><h4>Життя</h4><p data-f="life"></p></section>
-            <section class="lore-part" data-part="past"><h4>Події з минулого</h4><ol class="timeline" data-list="past"></ol></section>
-            <section class="lore-part" data-part="quirks"><h4>Дрібниці й звички</h4><ul class="quirks" data-list="quirks"></ul></section>
-          </div>
-        </details>
       </div>
     </div>
 
