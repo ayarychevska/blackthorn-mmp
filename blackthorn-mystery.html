@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="uk"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Blackthorn Mystery — Персонажі</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Cormorant+SC:wght@500;600;700&amp;display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="access-locked">
+
+<main class="login-screen" id="login-screen">
+  <section class="login-panel" aria-labelledby="login-title">
+    <span class="seal login-seal" aria-hidden="true">B</span>
+    <p class="case-no">Блекторн-Хол, 1894</p>
+    <h1 id="login-title">Приватне досьє</h1>
+    <p class="login-copy">Увійдіть під своїм персонажем або як ведуча.</p>
+    <form id="login-form" class="login-form">
+      <label class="field">
+        <span>Персонаж</span>
+        <select id="login-account" name="account" required></select>
+      </label>
+      <label class="field">
+        <span>Пароль</span>
+        <input id="login-password" name="password" type="password" autocomplete="current-password" required>
+      </label>
+      <p class="login-error" id="login-error" role="alert"></p>
+      <button class="btn btn-primary" type="submit">Увійти</button>
+    </form>
+  </section>
+</main>
+
+<nav class="toolbar" aria-label="Керування досьє">
+  <div class="toolbar-left">
+    <span class="brand"><span class="seal mini-seal" aria-hidden="true">B</span>Blackthorn, приватне досьє</span>
+    <div class="view-tabs" role="tablist" aria-label="Сторінки">
+      <button class="view-tab" type="button" role="tab" data-view="invite" aria-controls="view-invite" aria-selected="false">Запрошення</button>
+      <button class="view-tab" type="button" role="tab" data-view="cards" aria-controls="view-cards" aria-selected="true">Картки персонажів</button>
+      <button class="view-tab" type="button" role="tab" data-view="host" aria-controls="view-host" aria-selected="false">Сторінка ведучої</button>
+    </div>
+  </div>
+  <div class="toolbar-actions" id="cards-actions">
+    <button class="btn btn-primary" id="btn-add" type="button">＋ Новий персонаж</button>
+    <button class="btn" id="btn-secrets" type="button" aria-pressed="false">Відкрити всіх</button>
+    <button class="btn" id="btn-export" type="button" title="Завантажити базу персонажів у форматі JSON">Експорт JSON</button>
+    <button class="btn" id="btn-import" type="button" title="Завантажити персонажів з файлу JSON">Імпорт JSON</button>
+    <button class="btn" id="btn-print" type="button">Друк / PDF</button>
+    <button class="btn" id="btn-reset" type="button" title="Повернути дані, вбудовані у файл">Скинути</button>
+  </div>
+  <div class="toolbar-actions" id="host-actions" hidden="">
+    <button class="btn btn-primary" id="host-edit" type="button" aria-pressed="false">✎ Редагувати</button>
+    <button class="btn" id="host-json" type="button" title="Відкрити весь текст сторінки в JSON">JSON</button>
+    <button class="btn" id="host-export" type="button" title="Завантажити текст сторінки ведучої у форматі JSON">Експорт JSON</button>
+    <button class="btn" id="host-import" type="button" title="Завантажити текст сторінки ведучої з файлу JSON">Імпорт JSON</button>
+    <button class="btn" id="host-print" type="button">Друк / PDF</button>
+    <button class="btn" id="host-reset" type="button" title="Повернути текст, вбудований у файл">Скинути</button>
+  </div>
+  <div class="toolbar-actions" id="invite-actions" hidden="">
+    <button class="btn btn-primary" id="invite-edit" type="button" aria-pressed="false">✎ Редагувати</button>
+    <button class="btn" id="invite-print" type="button">Друк / PDF</button>
+    <button class="btn" id="invite-reset" type="button" title="Повернути текст, вбудований у файл">Скинути</button>
+  </div>
+  <div class="session-actions" hidden id="session-actions">
+    <span id="session-name"></span>
+    <button class="btn" id="logout" type="button">Вийти</button>
+  </div>
+  <input type="file" id="import-input" accept="application/json,.json" hidden="">
+  <input type="file" id="host-import-input" accept="application/json,.json" hidden="">
+</nav>
+
+<div id="view-cards">
+<header class="page-title">
+  <p class="case-no">Справа № 01, рік 1894</p>
+  <h1>Картки персонажів</h1>
+  <div class="flourish" aria-hidden="true">❦</div>
+  <p class="motto">Те, що знає кожен. Те, що приховує кожен.</p>
+  <p class="status-line" id="status-line"></p>
+</header>
+
+<main class="cards" id="cards" aria-live="polite"></main>
+</div>
+
+<div id="view-host" hidden="">
+  <header class="page-title">
+    <p class="case-no" id="host-case">Справа № 01, рік 1894</p>
+    <h1 id="host-title">Сторінка ведучої</h1>
+    <div class="flourish" aria-hidden="true">❦</div>
+    <p class="motto" id="host-motto">Те, чого не знає жоден гість.</p>
+    <span class="host-badge">Тільки для ведучої</span>
+  </header>
+  <nav class="host-toc" id="host-toc" aria-label="Розділи сторінки ведучої"></nav>
+  <main class="host-wrap" id="host" aria-live="polite"></main>
+</div>
+
+<div id="view-invite" hidden="">
+  <header class="page-title">
+    <p class="case-no" id="invite-case">Блекторн-Хол, 31 жовтня 1894</p>
+    <h1 id="invite-title">Запрошення</h1>
+    <div class="flourish" aria-hidden="true">❦</div>
+    <p class="motto" id="invite-motto">Для кожного гостя за столом Блекторнів</p>
+  </header>
+  <main class="invite-wrap" id="invite" aria-live="polite"></main>
+</div>
+
+<dialog class="json-dialog" id="json-dialog" aria-labelledby="json-title">
+  <form method="dialog" id="json-form">
+    <div class="json-head">
+      <h2 id="json-title">Текст сторінки ведучої в JSON</h2>
+      <p>Тут увесь вміст сторінки. Можна змінювати текст, додавати розділи й блоки. Типи блоків: <b>text</b>, <b>quote</b>, <b>list</b>, <b>table</b>, <b>checklist</b>, <b>accordion</b>. Подвійні зірочки <b>**так**</b> роблять текст жирним.</p>
+    </div>
+    <textarea id="json-text" spellcheck="false" aria-label="JSON сторінки ведучої"></textarea>
+    <p class="json-error" id="json-error" role="alert"></p>
+    <div class="json-foot">
+      <button class="btn" type="button" id="json-copy">Копіювати</button>
+      <button class="btn" type="button" id="json-cancel">Скасувати</button>
+      <button class="btn btn-primary" type="button" id="json-apply">Застосувати</button>
+    </div>
+  </form>
+</dialog>
+
+
+<!-- Картка персонажа (шаблон для рендеру з JSON) -->
+<template id="card-tpl">
+  <article class="card">
+    <div class="frame">
+      <div class="frame-inner">
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <span class="corner bl"></span><span class="corner br"></span>
+
+        <header class="card-head">
+          <p class="role" data-f="role"></p>
+          <h2 class="name" data-f="name"></h2>
+          <p class="player" data-f="player"></p>
+          <div class="seal" data-f="initials" aria-hidden="true"></div>
+        </header>
+
+        <div class="flourish" aria-hidden="true">❧</div>
+
+        <section class="sec" data-sec="who"><h3>Хто це</h3><p data-f="who"></p></section>
+        <section class="sec" data-sec="knows"><h3>Що знає</h3><p data-f="knows"></p></section>
+        <section class="sec sealed-note">
+          <h3>Під печаткою</h3>
+          <p>Секрет, цілі та особливість відкриються, коли ведуча дасть код печатки.</p>
+          <form class="unseal-form" hidden>
+            <label class="field"><span>Код печатки</span><input name="code" autocomplete="off" autocapitalize="off" spellcheck="false" required></label>
+            <button class="btn btn-primary" type="submit">Зламати печатку</button>
+            <p class="unseal-error" role="alert"></p>
+          </form>
+        </section>
+        <section class="sec" data-sec="secret"><h3>Секрет</h3><p data-f="secret"></p></section>
+
+        <section class="sec goal-main" data-sec="goalMain"><h3>Головна ціль</h3><p data-f="goalMain"></p></section>
+        <section class="sec goal" data-sec="goalExtra"><h3>Додаткова ціль</h3><p data-f="goalExtra"></p></section>
+        <section class="sec goal" data-sec="goalMini"><h3>Міні-ціль</h3><p data-f="goalMini"></p></section>
+
+        <section class="sec ability" data-sec="ability"><h3>Особливість</h3><p data-f="ability"></p></section>
+
+        <details class="lore" data-sec="lore">
+          <summary>Минуле персонажа <span class="hint">— життя, події, дрібниці</span></summary>
+          <div class="lore-body">
+            <section class="lore-part" data-part="life"><h4>Життя</h4><p data-f="life"></p></section>
+            <section class="lore-part" data-part="past"><h4>Події з минулого</h4><ol class="timeline" data-list="past"></ol></section>
+            <section class="lore-part" data-part="quirks"><h4>Дрібниці й звички</h4><ul class="quirks" data-list="quirks"></ul></section>
+          </div>
+        </details>
+      </div>
+    </div>
+
+    <div class="card-actions">
+      <span class="seal-code" data-f="sealCode" hidden></span>
+      <button class="icon-btn" type="button" data-action="reveal" aria-pressed="false">Відкрити</button>
+      <button class="icon-btn" type="button" data-action="edit">✎ Редагувати</button>
+      <button class="icon-btn" type="button" data-action="duplicate">Копія</button>
+      <button class="icon-btn" type="button" data-action="left" aria-label="Перемістити раніше">◂</button>
+      <button class="icon-btn" type="button" data-action="right" aria-label="Перемістити далі">▸</button>
+      <button class="icon-btn" type="button" data-action="delete">Видалити</button>
+    </div>
+  </article>
+</template>
+
+<!-- Редактор -->
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" aria-hidden="true">
+  <div class="drawer-head">
+    <div class="seal mini-seal" id="drawer-seal" aria-hidden="true">?</div>
+    <div>
+      <h2 id="drawer-title">Новий персонаж</h2>
+      <p id="drawer-sub">Заповни те, що знадобиться гравцю.</p>
+    </div>
+    <button class="btn close" type="button" data-close="" style="color:var(--wine);border-color:var(--line)" aria-label="Закрити редактор">✕</button>
+  </div>
+
+  <form class="drawer-body" id="editor" novalidate="">
+    <fieldset>
+      <legend>Особа</legend>
+      <label class="field" id="field-name">
+        <span>Ім'я персонажа</span>
+        <input name="name" autocomplete="off" placeholder="Arthur Blackthorn">
+        <span class="error-text">Впиши ім'я, щоб зберегти картку.</span>
+      </label>
+      <div class="field-row">
+        <label class="field">
+          <span>Роль</span>
+          <input name="role" autocomplete="off" placeholder="Спадкоємець">
+        </label>
+        <label class="field">
+          <span>Печатка</span>
+          <input name="initials" maxlength="3" autocomplete="off" placeholder="AB">
+        </label>
+      </div>
+      <label class="field">
+        <span>Гравець</span>
+        <input name="player" autocomplete="off" placeholder="Влад">
+        <small>Печатка заповнюється ініціалами автоматично, якщо лишити її порожньою.</small>
+      </label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Легенда</legend>
+      <label class="field"><span>Хто це</span><textarea name="who" placeholder="Вік, характер, звички, коротка передісторія."></textarea></label>
+      <label class="field"><span>Що знає</span><textarea name="knows" placeholder="Що персонаж знає на початку гри."></textarea></label>
+      <label class="field"><span>Секрет</span><textarea name="secret" placeholder="Таємниця, яку персонаж приховує."></textarea></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Цілі</legend>
+      <label class="field"><span>Головна ціль</span><textarea name="goalMain" placeholder="Найважливіше завдання персонажа."></textarea></label>
+      <label class="field"><span>Додаткова ціль</span><textarea name="goalExtra" placeholder="Особисте завдання для взаємодії з іншими."></textarea></label>
+      <label class="field"><span>Міні-ціль</span><textarea name="goalMini" placeholder="Невелике завдання на час вечірки."></textarea></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Особливість</legend>
+      <label class="field"><span>Назва здібності</span><input name="abilityName" autocomplete="off" placeholder="Спадкоємець"></label>
+      <label class="field"><span>Що вона дає</span><textarea name="abilityText" placeholder="Опис особливої дії та її обмежень."></textarea></label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Минуле</legend>
+      <label class="field"><span>Життя</span><textarea name="life" placeholder="Звідки родом, ким був, як жив до цього вечора."></textarea></label>
+      <label class="field">
+        <span>Події з минулого</span>
+        <textarea name="past" placeholder="1879 — Покинув Оксфорд на третьому курсі."></textarea>
+        <small>Кожна подія з нового рядка. Рік на початку рядка стане позначкою на шкалі.</small>
+      </label>
+      <label class="field">
+        <span>Дрібниці й звички</span>
+        <textarea name="quirks" placeholder="Алергія на лілії."></textarea>
+        <small>Кожна дрібниця з нового рядка.</small>
+      </label>
+    </fieldset>
+  </form>
+
+  <div class="drawer-foot">
+    <button class="btn btn-danger" type="button" id="drawer-delete">Видалити</button>
+    <span class="spacer"></span>
+    <span class="shortcut">Ctrl + Enter</span>
+    <button class="btn" type="button" data-close="">Скасувати</button>
+    <button class="btn btn-primary" type="submit" form="editor">Зберегти</button>
+  </div>
+</aside>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="data/public.js"></script><script src="auth.js" defer></script><script>
+window.initCards = () => {
+  const STORAGE_KEY = "blackthorn-dossier-v3";
+  const REVEALED_KEY = "blackthorn-dossier-revealed";
+  const SEALED_FIELDS = ["secret", "goalMain", "goalExtra", "goalMini", "abilityName", "abilityText"];
+  const FIELDS = ["name", "role", "player", "initials", "who", "knows", "secret",
+                  "goalMain", "goalExtra", "goalMini", "abilityName", "abilityText",
+                  "life", "past", "quirks"];
+  const DB_VERSION = 8;
+
+  const $ = (sel, root = document) => root.querySelector(sel);
+  const cardsEl = $("#cards");
+  const tpl = $("#card-tpl");
+  const form = $("#editor");
+  const isPlayer = window.BLACKTHORN_DATA.role !== "admin";
+  const seals = window.BLACKTHORN_DATA.seals || {};
+  const sealedIds = new Set(window.BLACKTHORN_DATA.sealedIds || []);
+  const embedded = readEmbedded();
+
+  let db = loadDb();
+  let editingId = null;
+  const revealed = new Set();
+
+  try { (JSON.parse(localStorage.getItem(REVEALED_KEY)) || []).forEach(id => revealed.add(id)); } catch (e) {}
+
+  function saveRevealed() {
+    try { localStorage.setItem(REVEALED_KEY, JSON.stringify([...revealed])); } catch (e) {}
+  }
+
+  function hasSealed(c) {
+    return SEALED_FIELDS.some(f => c[f].trim());
+  }
+
+  /* ---------- Data ---------- */
+  function uid() {
+    return "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+
+  function normalize(raw) {
+    const c = { id: raw && typeof raw.id === "string" && raw.id ? raw.id : uid() };
+    FIELDS.forEach(f => { c[f] = raw && typeof raw[f] === "string" ? raw[f] : ""; });
+    return c;
+  }
+
+  function normalizeDb(data) {
+    const list = Array.isArray(data) ? data : (data && Array.isArray(data.characters) ? data.characters : null);
+    if (!list) return null;
+    const seen = new Set();
+    const characters = list.map(normalize).map(c => {
+      if (seen.has(c.id)) c.id = uid();
+      seen.add(c.id);
+      return c;
+    });
+    return { version: DB_VERSION, characters };
+  }
+
+  function readEmbedded() {
+    try { return normalizeDb(window.BLACKTHORN_DATA.characters) || { version: DB_VERSION, characters: [] }; }
+    catch (e) { return { version: DB_VERSION, characters: [] }; }
+  }
+
+  function loadDb() {
+    if (isPlayer) return JSON.parse(JSON.stringify(embedded));
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      const parsed = saved && normalizeDb(JSON.parse(saved));
+      if (parsed) {
+        const missing = embedded.characters.filter(e => !parsed.characters.some(c => c.id === e.id)).length;
+        if (missing) {
+          setTimeout(() => toast(`У цьому браузері збережено старішу версію досьє: бракує ${missing} ${plural(missing, "персонажа", "персонажів", "персонажів")}. Натисни «Скинути», щоб показати всіх із файлу.`, 9000), 400);
+        }
+        return parsed;
+      }
+    } catch (e) {}
+    return JSON.parse(JSON.stringify(embedded));
+  }
+
+  function persist() {
+    if (isPlayer) return true;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+      return true;
+    } catch (e) {
+      toast("Браузер не дозволив зберегти зміни. Скористайся «Експорт JSON» або «Зберегти файл».");
+      return false;
+    }
+  }
+
+  function autoInitials(name) {
+    const words = (name || "").trim().split(/\s+/).filter(Boolean);
+    if (!words.length) return "?";
+    const letters = words.length > 1 ? words[0][0] + words[words.length - 1][0] : words[0][0];
+    return letters.toUpperCase();
+  }
+
+  /* ---------- Render ---------- */
+  function render() {
+    cardsEl.textContent = "";
+    const list = db.characters;
+    saveRevealed();
+    syncSecretsButton();
+
+    $("#status-line").textContent = list.length
+      ? `У справі ${list.length} ${plural(list.length, "персонаж", "персонажі", "персонажів")}. Зміни зберігаються в цьому браузері автоматично.`
+      : "";
+
+    if (!list.length) {
+      const empty = document.createElement("div");
+      empty.className = "empty";
+      empty.innerHTML = '<h2>Справа поки порожня</h2><p>Додай першого підозрюваного, щоб почати досьє.</p>';
+      const btn = document.createElement("button");
+      btn.className = "btn btn-primary";
+      btn.type = "button";
+      btn.textContent = "＋ Новий персонаж";
+      btn.addEventListener("click", () => openEditor(null));
+      empty.appendChild(btn);
+      cardsEl.appendChild(empty);
+      return;
+    }
+
+    list.forEach((c, i) => {
+      const node = tpl.content.firstElementChild.cloneNode(true);
+      node.dataset.id = c.id;
+      const onlyId = document.body.dataset.character;
+      if (onlyId && onlyId !== c.id) node.hidden = true;
+
+      setText(node, "role", c.role);
+      setText(node, "name", c.name || "Без імені");
+      setText(node, "player", c.player ? `Гравець: ${c.player}` : "");
+      setText(node, "initials", (c.initials || autoInitials(c.name)).toUpperCase());
+
+      ["who", "knows", "secret", "goalMain", "goalExtra", "goalMini"].forEach(f => {
+        setText(node, f, c[f]);
+        toggleSection(node, f, c[f]);
+      });
+
+      const abilityP = $('[data-f="ability"]', node);
+      if (c.abilityName) {
+        const strong = document.createElement("strong");
+        strong.textContent = `«${c.abilityName}»`;
+        abilityP.append(strong, c.abilityText ? ": " + c.abilityText : "");
+      } else {
+        abilityP.textContent = c.abilityText;
+      }
+      toggleSection(node, "ability", c.abilityName || c.abilityText);
+
+      renderLore(node, c);
+
+      const isRevealed = revealed.has(c.id);
+      const locked = isPlayer ? sealedIds.has(c.id) : hasSealed(c) && !isRevealed;
+      if (locked) node.classList.add("locked");
+      $(".unseal-form", node).hidden = !sealedIds.has(c.id);
+      const sealCode = $('[data-f="sealCode"]', node);
+      sealCode.textContent = seals[c.id] ? `Код печатки: ${seals[c.id]}` : "";
+      sealCode.hidden = !seals[c.id];
+      const revealBtn = $('[data-action="reveal"]', node);
+      revealBtn.textContent = isRevealed ? "Сховати" : "Відкрити";
+      revealBtn.setAttribute("aria-pressed", String(isRevealed));
+      revealBtn.hidden = !hasSealed(c);
+
+      $('[data-action="left"]', node).disabled = i === 0;
+      $('[data-action="right"]', node).disabled = i === list.length - 1;
+
+      cardsEl.appendChild(node);
+    });
+  }
+
+  function lines(value) {
+    return String(value || "").split(/\n+/).map(s => s.trim()).filter(Boolean);
+  }
+
+  function renderLore(node, c) {
+    setText(node, "life", c.life);
+    $('[data-part="life"]', node).hidden = !c.life.trim();
+
+    const pastEl = $('[data-list="past"]', node);
+    const past = lines(c.past);
+    past.forEach(line => {
+      const li = document.createElement("li");
+      const m = line.match(/^(\d{3,4})\s*[—–-]\s*(.+)$/);
+      const yr = document.createElement("span");
+      yr.className = "yr";
+      yr.textContent = m ? m[1] : "";
+      const ev = document.createElement("span");
+      ev.className = "ev";
+      ev.textContent = m ? m[2] : line;
+      li.append(yr, ev);
+      pastEl.appendChild(li);
+    });
+    $('[data-part="past"]', node).hidden = !past.length;
+
+    const quirksEl = $('[data-list="quirks"]', node);
+    const quirks = lines(c.quirks);
+    quirks.forEach(q => {
+      const li = document.createElement("li");
+      li.textContent = q;
+      quirksEl.appendChild(li);
+    });
+    $('[data-part="quirks"]', node).hidden = !quirks.length;
+
+    $('[data-sec="lore"]', node).hidden = !(c.life.trim() || past.length || quirks.length);
+  }
+
+  function setText(node, field, value) {
+    const el = $(`[data-f="${field}"]`, node);
+    el.textContent = value || "";
+    if (!value && (field === "role" || field === "player")) el.hidden = true;
+  }
+
+  function toggleSection(node, key, value) {
+    const sec = $(`[data-sec="${key}"]`, node);
+    if (sec) sec.hidden = !String(value || "").trim();
+  }
+
+  function plural(n, one, few, many) {
+    const m10 = n % 10, m100 = n % 100;
+    if (m10 === 1 && m100 !== 11) return one;
+    if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return few;
+    return many;
+  }
+
+  function flashCard(id) {
+    const el = cardsEl.querySelector(`[data-id="${CSS.escape(id)}"]`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.classList.remove("flash");
+    void el.offsetWidth;
+    el.classList.add("flash");
+  }
+
+  /* ---------- Card actions ---------- */
+  cardsEl.addEventListener("click", e => {
+    const btn = e.target.closest("[data-action]");
+    if (!btn) return;
+    const card = btn.closest(".card");
+    const id = card && card.dataset.id;
+    const idx = db.characters.findIndex(c => c.id === id);
+    if (idx < 0) return;
+    const c = db.characters[idx];
+
+    switch (btn.dataset.action) {
+      case "edit":
+        openEditor(id);
+        break;
+      case "reveal":
+        if (revealed.has(id)) revealed.delete(id); else revealed.add(id);
+        render();
+        break;
+      case "duplicate": {
+        const copy = { ...c, id: uid(), name: c.name ? c.name + " (копія)" : "" };
+        db.characters.splice(idx + 1, 0, copy);
+        persist(); render(); flashCard(copy.id);
+        toast("Створено копію картки");
+        break;
+      }
+      case "left":
+      case "right": {
+        const to = btn.dataset.action === "left" ? idx - 1 : idx + 1;
+        if (to < 0 || to >= db.characters.length) return;
+        [db.characters[idx], db.characters[to]] = [db.characters[to], db.characters[idx]];
+        persist(); render(); flashCard(id);
+        break;
+      }
+      case "delete":
+        deleteCharacter(id);
+        break;
+    }
+  });
+
+  function deleteCharacter(id) {
+    const c = db.characters.find(x => x.id === id);
+    if (!c) return false;
+    if (!confirm(`Видалити картку «${c.name || "Без імені"}»? Цю дію не можна скасувати.`)) return false;
+    db.characters = db.characters.filter(x => x.id !== id);
+    revealed.delete(id);
+    persist(); render();
+    toast("Картку видалено");
+    return true;
+  }
+
+  /* ---------- Editor ---------- */
+  function openEditor(id) {
+    editingId = id;
+    const c = id ? db.characters.find(x => x.id === id) : null;
+    form.reset();
+    $("#field-name").classList.remove("invalid");
+    FIELDS.forEach(f => { if (form.elements[f]) form.elements[f].value = c ? c[f] : ""; });
+
+    $("#drawer-title").textContent = c ? (c.name || "Без імені") : "Новий персонаж";
+    $("#drawer-sub").textContent = c ? "Редагування картки" : "Заповни те, що знадобиться гравцю.";
+    $("#drawer-delete").hidden = !c;
+    updateSealPreview();
+
+    document.body.classList.add("drawer-open");
+    $("#drawer").setAttribute("aria-hidden", "false");
+    form.querySelectorAll("textarea").forEach(autosize);
+    setTimeout(() => form.elements.name.focus(), 60);
+  }
+
+  function closeEditor() {
+    document.body.classList.remove("drawer-open");
+    $("#drawer").setAttribute("aria-hidden", "true");
+    editingId = null;
+  }
+
+  function updateSealPreview() {
+    const val = form.elements.initials.value.trim() || autoInitials(form.elements.name.value);
+    $("#drawer-seal").textContent = val.toUpperCase();
+    form.elements.initials.placeholder = autoInitials(form.elements.name.value);
+  }
+
+  function autosize(t) {
+    t.style.height = "auto";
+    t.style.height = t.scrollHeight + 2 + "px";
+  }
+
+  form.addEventListener("input", e => {
+    if (e.target.tagName === "TEXTAREA") autosize(e.target);
+    if (e.target.name === "name" || e.target.name === "initials") updateSealPreview();
+    if (e.target.name === "name" && e.target.value.trim()) $("#field-name").classList.remove("invalid");
+  });
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    const data = {};
+    FIELDS.forEach(f => { data[f] = (form.elements[f].value || "").trim(); });
+
+    if (!data.name) {
+      $("#field-name").classList.add("invalid");
+      form.elements.name.focus();
+      return;
+    }
+
+    let id = editingId;
+    if (id) {
+      const idx = db.characters.findIndex(x => x.id === id);
+      db.characters[idx] = normalize({ ...data, id });
+    } else {
+      const c = normalize({ ...data, id: uid() });
+      id = c.id;
+      db.characters.push(c);
+    }
+
+    persist();
+    closeEditor();
+    render();
+    flashCard(id);
+    toast("Картку збережено");
+  });
+
+  $("#drawer-delete").addEventListener("click", () => {
+    if (editingId && deleteCharacter(editingId)) closeEditor();
+  });
+
+  document.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", closeEditor));
+  $("#scrim").addEventListener("click", closeEditor);
+
+  document.addEventListener("keydown", e => {
+    if (!document.body.classList.contains("drawer-open")) return;
+    if (e.key === "Escape") closeEditor();
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); form.requestSubmit(); }
+  });
+
+  /* ---------- Toolbar ---------- */
+  $("#btn-add").addEventListener("click", () => openEditor(null));
+
+  function allRevealed() {
+    const sealed = db.characters.filter(hasSealed);
+    return sealed.length > 0 && sealed.every(c => revealed.has(c.id));
+  }
+
+  function syncSecretsButton() {
+    const b = $("#btn-secrets");
+    const all = allRevealed();
+    b.textContent = all ? "Сховати всіх" : "Відкрити всіх";
+    b.setAttribute("aria-pressed", String(all));
+    b.classList.toggle("is-on", all);
+  }
+
+  $("#btn-secrets").addEventListener("click", () => {
+    if (allRevealed()) revealed.clear();
+    else db.characters.forEach(c => revealed.add(c.id));
+    render();
+  });
+
+  function download(filename, content, type) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  $("#btn-export").addEventListener("click", () => {
+    download("blackthorn-characters.json", JSON.stringify(db, null, 2), "application/json");
+    toast("JSON завантажено");
+  });
+
+  $("#btn-import").addEventListener("click", () => $("#import-input").click());
+
+  $("#import-input").addEventListener("change", async e => {
+    const file = e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    try {
+      const incoming = normalizeDb(JSON.parse(await file.text()));
+      if (!incoming) throw new Error("format");
+      const replace = db.characters.length === 0 || confirm(
+        `У файлі ${incoming.characters.length} ${plural(incoming.characters.length, "персонаж", "персонажі", "персонажів")}.\n\n` +
+        "OK — замінити поточних персонажів.\nСкасувати — додати їх до наявних."
+      );
+      if (replace) {
+        db = incoming;
+      } else {
+        const ids = new Set(db.characters.map(c => c.id));
+        incoming.characters.forEach(c => { if (ids.has(c.id)) c.id = uid(); db.characters.push(c); });
+      }
+      revealed.clear();
+      persist(); render();
+      toast(replace ? "Персонажів замінено з файлу" : "Персонажів додано з файлу");
+    } catch (err) {
+      toast("Цей файл не схожий на базу персонажів. Потрібен JSON, експортований з цієї сторінки.");
+    }
+  });
+
+  $("#btn-print").addEventListener("click", () => window.print());
+
+  let closedForPrint = [];
+  window.addEventListener("beforeprint", () => {
+    closedForPrint = [...cardsEl.querySelectorAll(".lore:not([open])")];
+    closedForPrint.forEach(d => { d.open = true; });
+  });
+  window.addEventListener("afterprint", () => {
+    closedForPrint.forEach(d => { d.open = false; });
+    closedForPrint = [];
+  });
+
+  $("#btn-reset").addEventListener("click", () => {
+    if (!confirm("Повернути персонажів, вбудованих у файл? Зміни в цьому браузері буде втрачено.")) return;
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+    db = JSON.parse(JSON.stringify(embedded));
+    revealed.clear();
+    render();
+    toast("Дані скинуто до вбудованих у файл");
+  });
+
+  /* ---------- Toast ---------- */
+  let toastTimer;
+  function toast(msg, ms) {
+    const t = $("#toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), ms || 2600);
+  }
+
+  /* ---------- Init ---------- */
+  $("#drawer").setAttribute("aria-hidden", "true");
+  render();
+
+  // Keep other tabs of this browser (e.g. a player's screen) in sync with the host's reveals.
+  window.addEventListener("storage", e => {
+    if (e.key !== REVEALED_KEY) return;
+    revealed.clear();
+    try { (JSON.parse(e.newValue) || []).forEach(id => revealed.add(id)); } catch (err) {}
+    render();
+  });
+
+  window.BlackthornCards = {
+    unseal(id, fields) {
+      const c = db.characters.find(x => x.id === id);
+      if (!c) return;
+      SEALED_FIELDS.forEach(f => { c[f] = typeof fields[f] === "string" ? fields[f] : ""; });
+      sealedIds.delete(id);
+      render();
+    }
+  };
+};
+</script>
+
+<script>
+/* ---------- Сторінка ведучої ---------- */
+window.initHost = () => {
+  const HOST_KEY = "blackthorn-host-v3";
+  const $ = (s, r = document) => r.querySelector(s);
+  const clone = x => JSON.parse(JSON.stringify(x));
+  const ROMAN = ["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV","XV"];
+  const BLOCK_TYPES = ["text", "quote", "list", "table", "checklist", "accordion"];
+
+  const root = $("#host");
+  const embedded = readEmbedded();
+  let data = load();
+  let editing = false;
+  const openAcc = new Set();
+
+  const PLAINTEXT = (() => {
+    try { const d = document.createElement("div"); d.contentEditable = "plaintext-only"; return d.contentEditable === "plaintext-only"; }
+    catch (e) { return false; }
+  })();
+
+  /* ---------- Дані ---------- */
+  function validate(d) {
+    if (!d || typeof d !== "object") return "Очікується об'єкт з полем «sections».";
+    if (!Array.isArray(d.sections)) return "Поле «sections» має бути списком розділів.";
+    for (const [i, s] of d.sections.entries()) {
+      if (!s || typeof s !== "object") return `Розділ ${i + 1} має бути об'єктом.`;
+      if (s.blocks && !Array.isArray(s.blocks)) return `У розділі «${s.title || i + 1}» поле «blocks» має бути списком.`;
+      for (const [j, b] of (s.blocks || []).entries()) {
+        if (!b || !BLOCK_TYPES.includes(b.type)) return `Розділ «${s.title || i + 1}», блок ${j + 1}: невідомий тип «${b && b.type}». Можливі: ${BLOCK_TYPES.join(", ")}.`;
+      }
+    }
+    return null;
+  }
+
+  function normalize(d) {
+    d.sections.forEach((s, i) => {
+      s.id = s.id || "sec-" + i;
+      s.title = s.title || "";
+      s.intro = s.intro || "";
+      s.blocks = s.blocks || [];
+      s.blocks.forEach(b => {
+        if (b.type === "text" || b.type === "quote") b.body = b.body || "";
+        if (b.type === "list") b.items = (b.items || []).map(String);
+        if (b.type === "table") {
+          b.columns = (b.columns || []).map(String);
+          b.rows = (b.rows || []).map(r => b.columns.map((_, k) => String((r || [])[k] ?? "")));
+        }
+        if (b.type === "checklist") b.items = (b.items || []).map(it => typeof it === "string" ? { text: it, done: false } : { text: String(it.text || ""), done: !!it.done });
+        if (b.type === "accordion") b.items = (b.items || []).map(it => ({ title: String(it.title || ""), subtitle: String(it.subtitle || ""), body: String(it.body || "") }));
+      });
+    });
+    return d;
+  }
+
+  function readEmbedded() {
+    try { const d = window.BLACKTHORN_DATA.host; return validate(d) ? { sections: [] } : normalize(d); }
+    catch (e) { return { sections: [] }; }
+  }
+
+  function load() {
+    if (window.BLACKTHORN_DATA.role !== "admin") return clone(embedded);
+    try {
+      const saved = localStorage.getItem(HOST_KEY);
+      if (saved) {
+        const d = JSON.parse(saved);
+        if (!validate(d)) return normalize(d);
+      }
+    } catch (e) {}
+    return clone(embedded);
+  }
+
+  let saveTimer;
+  function save(now) {
+    clearTimeout(saveTimer);
+    const run = () => {
+      try { localStorage.setItem(HOST_KEY, JSON.stringify(data)); }
+      catch (e) { toast("Браузер не дозволив зберегти зміни. Скористайся «Експорт JSON» або «Зберегти файл»."); }
+    };
+    if (now) run(); else saveTimer = setTimeout(run, 300);
+  }
+
+  /* ---------- Форматування ---------- */
+  function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+  function inline(s) { return esc(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>"); }
+  function prose(s) {
+    const parts = String(s || "").split(/\n{2,}/).filter(p => p.trim());
+    return parts.map(p => "<p>" + inline(p) + "</p>").join("");
+  }
+
+  /* Поле, яке в режимі редагування стає редагованим і пише назад у JSON */
+  function field(tag, obj, key, opts = {}) {
+    const el = document.createElement(tag);
+    if (opts.cls) el.className = opts.cls;
+    const v = obj[key] ?? "";
+    if (editing) {
+      el.textContent = v;
+      el.contentEditable = PLAINTEXT ? "plaintext-only" : "true";
+      el.classList.add("ed");
+      el.dataset.ph = opts.ph || "Порожньо";
+      el.setAttribute("role", "textbox");
+      if (opts.multi) el.setAttribute("aria-multiline", "true");
+      if (opts.label) el.setAttribute("aria-label", opts.label);
+      el.addEventListener("keydown", e => { if (e.key === "Enter" && !opts.multi) { e.preventDefault(); el.blur(); } });
+      el.addEventListener("paste", e => {
+        if (PLAINTEXT) return;
+        e.preventDefault();
+        document.execCommand("insertText", false, e.clipboardData.getData("text/plain"));
+      });
+      el.addEventListener("input", () => {
+        obj[key] = el.innerText.replace(/\u00a0/g, " ").replace(/\r/g, "").replace(/\n$/, "");
+        if (opts.onInput) opts.onInput();
+        save();
+      });
+    } else {
+      el.innerHTML = opts.multi && !opts.inlineView ? prose(v) : inline(v);
+    }
+    return el;
+  }
+
+  function button(cls, text, label, onClick) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = cls;
+    b.textContent = text;
+    if (label) b.setAttribute("aria-label", label);
+    b.addEventListener("click", onClick);
+    return b;
+  }
+  const removeBtn = (label, fn) => button("mini-x", "✕", label, () => { fn(); save(true); render(); });
+  const addBtn = (text, fn) => button("add-row", "＋ " + text, null, () => { fn(); save(true); render(); });
+
+  function blockTitle(wrap, b, ph) {
+    if (editing) wrap.appendChild(field("h3", b, "title", { ph: ph || "Заголовок блоку (необов'язково)", label: "Заголовок блоку" }));
+    else if (b.title) wrap.appendChild(field("h3", b, "title"));
+  }
+
+  /* ---------- Блоки ---------- */
+  const renderers = {
+    text(b) {
+      const w = document.createElement("div");
+      w.className = "hb hb-text";
+      blockTitle(w, b);
+      w.appendChild(field("div", b, "body", { cls: "prose", multi: true, ph: "Текст…", label: "Текст" }));
+      return w;
+    },
+
+    quote(b) {
+      const w = renderers.text(b);
+      w.className = "hb hb-quote";
+      return w;
+    },
+
+    list(b) {
+      const w = document.createElement("div");
+      w.className = "hb hb-list";
+      blockTitle(w, b);
+      const ul = document.createElement("ul");
+      ul.className = "bullets";
+      b.items.forEach((_, i) => {
+        const li = document.createElement("li");
+        if (editing) {
+          li.className = "editing-row";
+          li.append(field("span", b.items, i, { multi: true, ph: "Пункт списку", label: "Пункт " + (i + 1) }),
+                    removeBtn("Видалити пункт " + (i + 1), () => b.items.splice(i, 1)));
+        } else {
+          li.innerHTML = inline(b.items[i]);
+        }
+        ul.appendChild(li);
+      });
+      w.appendChild(ul);
+      if (editing) w.appendChild(addBtn("пункт", () => b.items.push("")));
+      return w;
+    },
+
+    table(b) {
+      const w = document.createElement("div");
+      w.className = "hb hb-table";
+      blockTitle(w, b);
+      const wrap = document.createElement("div");
+      wrap.className = "table-wrap";
+      const t = document.createElement("table");
+      const thead = t.createTHead().insertRow();
+      b.columns.forEach((_, k) => {
+        const th = document.createElement("th");
+        th.scope = "col";
+        th.appendChild(field("span", b.columns, k, { ph: "Колонка", label: "Назва колонки " + (k + 1) }));
+        thead.appendChild(th);
+      });
+      if (editing) { const th = document.createElement("th"); th.className = "ctl"; th.innerHTML = '<span class="visually-hidden">Дії</span>'; thead.appendChild(th); }
+      const tb = t.createTBody();
+      b.rows.forEach((row, r) => {
+        const tr = tb.insertRow();
+        row.forEach((_, k) => {
+          const td = tr.insertCell();
+          td.appendChild(field("div", row, k, { multi: true, inlineView: true, ph: "—", label: `${b.columns[k] || "Клітинка"}, рядок ${r + 1}` }));
+        });
+        if (editing) { const td = tr.insertCell(); td.className = "ctl"; td.appendChild(removeBtn("Видалити рядок " + (r + 1), () => b.rows.splice(r, 1))); }
+      });
+      wrap.appendChild(t);
+      w.appendChild(wrap);
+      if (editing) w.appendChild(addBtn("рядок", () => b.rows.push(b.columns.map(() => ""))));
+      return w;
+    },
+
+    checklist(b) {
+      const w = document.createElement("div");
+      w.className = "hb hb-check";
+      const head = document.createElement("div");
+      head.className = "check-head";
+      blockTitle(head, b, "Назва списку");
+      if (!head.firstChild) head.appendChild(document.createElement("h3"));
+      const count = document.createElement("span");
+      count.className = "check-count";
+      const upd = () => { count.textContent = `${b.items.filter(i => i.done).length} / ${b.items.length}`; };
+      upd();
+      head.appendChild(count);
+      w.appendChild(head);
+      const ul = document.createElement("ul");
+      ul.className = "checklist";
+      b.items.forEach((it, i) => {
+        const li = document.createElement("li");
+        if (it.done) li.classList.add("done");
+        const box = document.createElement("input");
+        box.type = "checkbox";
+        box.checked = it.done;
+        const text = field("span", it, "text", { cls: "ck-text", multi: true, inlineView: true, ph: "Що підготувати", label: "Пункт " + (i + 1) });
+        if (!editing) {
+          const id = `ck-${Math.random().toString(36).slice(2, 9)}`;
+          box.id = id;
+          const lab = document.createElement("label");
+          lab.htmlFor = id;
+          lab.className = "ck-text";
+          lab.innerHTML = text.innerHTML;
+          li.append(box, lab);
+        } else {
+          box.setAttribute("aria-label", "Виконано: пункт " + (i + 1));
+          li.className += " editing-row";
+          li.append(box, text, removeBtn("Видалити пункт " + (i + 1), () => b.items.splice(i, 1)));
+        }
+        box.addEventListener("change", () => { it.done = box.checked; li.classList.toggle("done", it.done); upd(); save(true); });
+        ul.appendChild(li);
+      });
+      w.appendChild(ul);
+      if (editing) w.appendChild(addBtn("пункт", () => b.items.push({ text: "", done: false })));
+      return w;
+    },
+
+    accordion(b, key) {
+      const w = document.createElement("div");
+      w.className = "hb hb-acc";
+      blockTitle(w, b);
+      const tools = document.createElement("div");
+      tools.className = "acc-tools";
+      const acc = document.createElement("div");
+      acc.className = "acc";
+      const toggleAll = button("linkish", "", null, () => {
+        const items = [...acc.querySelectorAll(".acc-item")];
+        const open = !items.every(d => d.open);
+        items.forEach(d => { d.open = open; });
+      });
+      const syncToggle = () => {
+        const items = [...acc.querySelectorAll(".acc-item")];
+        toggleAll.textContent = items.length && items.every(d => d.open) ? "Згорнути все" : "Розгорнути все";
+      };
+      tools.appendChild(toggleAll);
+      if (b.items.length > 1) w.appendChild(tools);
+
+      b.items.forEach((it, i) => {
+        const k = `${key}:${i}`;
+        const d = document.createElement("details");
+        d.className = "acc-item";
+        d.open = openAcc.has(k);
+        d.addEventListener("toggle", () => { d.open ? openAcc.add(k) : openAcc.delete(k); syncToggle(); });
+        const s = document.createElement("summary");
+        const label = document.createElement("span");
+        label.className = "acc-label";
+        const tt = document.createElement("span"); tt.className = "acc-title"; tt.innerHTML = inline(it.title || "Без назви");
+        label.appendChild(tt);
+        if (it.subtitle) { const st = document.createElement("span"); st.className = "acc-sub"; st.innerHTML = inline(it.subtitle); label.appendChild(st); }
+        s.appendChild(label);
+        d.appendChild(s);
+
+        const body = document.createElement("div");
+        body.className = "acc-body";
+        if (editing) {
+          const f = document.createElement("div");
+          f.className = "acc-edit-fields";
+          const l1 = document.createElement("label"); l1.textContent = "Назва";
+          l1.appendChild(field("span", it, "title", { ph: "Назва реквізиту", label: "Назва", onInput: () => { tt.innerHTML = inline(it.title || "Без назви"); } }));
+          const l2 = document.createElement("label"); l2.textContent = "Підпис";
+          l2.appendChild(field("span", it, "subtitle", { ph: "Коротко: хто, коли", label: "Підпис" }));
+          f.append(l1, l2);
+          body.appendChild(f);
+        }
+        body.appendChild(field("div", it, "body", { cls: "prose", multi: true, ph: "Повний текст…", label: "Текст" }));
+        if (editing) {
+          const row = document.createElement("div");
+          row.style.cssText = "display:flex;justify-content:flex-end;margin-top:8px";
+          row.appendChild(button("add-row", "Видалити цей елемент", null, () => {
+            if (!confirm(`Видалити «${it.title || "без назви"}»?`)) return;
+            b.items.splice(i, 1); openAcc.clear(); save(true); render();
+          }));
+          body.appendChild(row);
+        }
+        d.appendChild(body);
+        acc.appendChild(d);
+      });
+      w.appendChild(acc);
+      syncToggle();
+      if (editing) w.appendChild(addBtn("елемент", () => { b.items.push({ title: "Новий реквізит", subtitle: "", body: "" }); openAcc.add(`${key}:${b.items.length - 1}`); }));
+      return w;
+    }
+  };
+
+  /* ---------- Рендер ---------- */
+  function render() {
+    const y = window.scrollY;
+    ["caseNo", "title", "motto"].forEach(k => {
+      const id = { caseNo: "#host-case", title: "#host-title", motto: "#host-motto" }[k];
+      const old = $(id);
+      const el = field(old.tagName.toLowerCase(), data, k, { cls: old.className.replace(/\bed\b/g, "").trim(), ph: "…", label: k });
+      el.id = old.id;
+      old.replaceWith(el);
+    });
+    document.title = (data.title || "Сторінка ведучої") + " — The Blackthorn Mystery";
+
+    const toc = $("#host-toc");
+    toc.textContent = "";
+    root.textContent = "";
+
+    if (editing) {
+      const ban = document.createElement("p");
+      ban.className = "edit-banner";
+      ban.textContent = "Режим редагування: клацніть на будь-який текст, щоб змінити його. Зміни зберігаються в браузері автоматично. **Подвійні зірочки** роблять текст жирним.";
+      root.appendChild(ban);
+    }
+
+    data.sections.forEach((sec, si) => {
+      const a = document.createElement("a");
+      a.href = "#host-" + sec.id;
+      a.textContent = sec.title || "Розділ " + (si + 1);
+      a.addEventListener("click", e => {
+        e.preventDefault();
+        document.getElementById("host-" + sec.id)?.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+      });
+      toc.appendChild(a);
+
+      const art = document.createElement("section");
+      art.className = "host-sec";
+      art.id = "host-" + sec.id;
+      art.innerHTML = '<div class="frame"><div class="frame-inner"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span></div></div>';
+      const inner = $(".frame-inner", art);
+
+      const head = document.createElement("div");
+      head.className = "host-sec-head";
+      const num = document.createElement("span");
+      num.className = "host-num";
+      num.textContent = ROMAN[si] || String(si + 1);
+      head.append(num, field("h2", sec, "title", { ph: "Назва розділу", label: "Назва розділу", onInput: () => { a.textContent = sec.title || "Розділ " + (si + 1); } }));
+      inner.appendChild(head);
+      if (sec.intro || editing) inner.appendChild(field("p", sec, "intro", { cls: "host-intro", multi: false, ph: "Короткий вступ (необов'язково)", label: "Вступ до розділу" }));
+
+      sec.blocks.forEach((b, bi) => {
+        const r = renderers[b.type];
+        if (r) inner.appendChild(r(b, `${sec.id}:${bi}`));
+      });
+      root.appendChild(art);
+    });
+    if (editing) window.scrollTo(0, y);
+  }
+
+  /* ---------- Дії ---------- */
+  function setEditing(on) {
+    editing = on;
+    const b = $("#host-edit");
+    b.classList.toggle("is-on", on);
+    b.setAttribute("aria-pressed", String(on));
+    b.textContent = on ? "✓ Готово" : "✎ Редагувати";
+    render();
+  }
+
+  function download(name, content, type) {
+    const url = URL.createObjectURL(new Blob([content], { type }));
+    const a = document.createElement("a");
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  let toastTimer;
+  function toast(msg, ms) {
+    const t = $("#toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), ms || 2600);
+  }
+
+  $("#host-edit").addEventListener("click", () => setEditing(!editing));
+
+  const dlg = $("#json-dialog");
+  $("#host-json").addEventListener("click", () => {
+    $("#json-text").value = JSON.stringify(data, null, 2);
+    $("#json-error").textContent = "";
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
+    $("#json-text").focus();
+    $("#json-text").setSelectionRange(0, 0);
+    $("#json-text").scrollTop = 0;
+  });
+  const closeDlg = () => { if (dlg.close) dlg.close(); else dlg.removeAttribute("open"); };
+  $("#json-cancel").addEventListener("click", closeDlg);
+  $("#json-copy").addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText($("#json-text").value); toast("JSON скопійовано"); }
+    catch (e) { $("#json-text").select(); toast("Виділено — скопіюй через Ctrl+C"); }
+  });
+  $("#json-apply").addEventListener("click", () => {
+    let d;
+    try { d = JSON.parse($("#json-text").value); }
+    catch (e) { $("#json-error").textContent = "Помилка в JSON: " + e.message; return; }
+    const err = validate(d);
+    if (err) { $("#json-error").textContent = err; return; }
+    data = normalize(d);
+    openAcc.clear();
+    save(true); render(); closeDlg();
+    toast("Сторінку ведучої оновлено з JSON");
+  });
+  $("#json-text").addEventListener("keydown", e => {
+    if (e.key === "Tab" && !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
+      e.preventDefault();
+      const t = e.target, s = t.selectionStart;
+      t.setRangeText("  ", s, t.selectionEnd, "end");
+    }
+  });
+
+  $("#host-export").addEventListener("click", () => {
+    download("blackthorn-host.json", JSON.stringify(data, null, 2), "application/json");
+    toast("JSON сторінки ведучої завантажено");
+  });
+  $("#host-import").addEventListener("click", () => $("#host-import-input").click());
+  $("#host-import-input").addEventListener("change", async e => {
+    const file = e.target.files[0];
+    e.target.value = "";
+    if (!file) return;
+    try {
+      const d = JSON.parse(await file.text());
+      const err = validate(d);
+      if (err) { toast("Файл не підходить: " + err, 6000); return; }
+      if (!confirm("Замінити весь вміст сторінки ведучої даними з файлу?")) return;
+      data = normalize(d); openAcc.clear(); save(true); render();
+      toast("Сторінку ведучої завантажено з файлу");
+    } catch (err) {
+      toast("Це не JSON. Потрібен файл, експортований зі сторінки ведучої.", 6000);
+    }
+  });
+  $("#host-reset").addEventListener("click", () => {
+    if (!confirm("Повернути текст сторінки ведучої, вбудований у файл? Зміни в цьому браузері буде втрачено.")) return;
+    try { localStorage.removeItem(HOST_KEY); } catch (e) {}
+    data = clone(embedded); openAcc.clear(); render();
+    toast("Сторінку ведучої скинуто до вбудованої у файл");
+  });
+  $("#host-print").addEventListener("click", () => window.print());
+
+  let closedForPrint = [];
+  window.addEventListener("beforeprint", () => {
+    closedForPrint = [...root.querySelectorAll(".acc-item:not([open])")];
+    closedForPrint.forEach(d => { d.open = true; });
+  });
+  window.addEventListener("afterprint", () => {
+    closedForPrint.forEach(d => { d.open = false; });
+    closedForPrint = [];
+  });
+
+  /* ---------- Перемикання сторінок ---------- */
+  const VIEWS = ["cards", "host", "invite"];
+  function showView(v) {
+    if (!VIEWS.includes(v)) v = "cards";
+    VIEWS.forEach(n => {
+      const view = $("#view-" + n), act = $("#" + n + "-actions");
+      if (view) view.hidden = n !== v;
+      if (act) act.hidden = n !== v;
+    });
+    document.querySelectorAll(".view-tab").forEach(t => t.setAttribute("aria-selected", String(t.dataset.view === v)));
+    document.title = v === "host" ? (data.title || "Сторінка ведучої") + " — The Blackthorn Mystery"
+      : v === "invite" ? "Запрошення — The Blackthorn Mystery" : "The Blackthorn Mystery — Персонажі";
+  }
+  document.querySelectorAll(".view-tab").forEach(t => t.addEventListener("click", () => {
+    if (location.hash !== "#" + t.dataset.view) history.replaceState(null, "", "#" + t.dataset.view);
+    showView(t.dataset.view);
+    window.scrollTo(0, 0);
+  }));
+  window.addEventListener("hashchange", () => showView(location.hash.slice(1)));
+
+  window.BlackthornHost = { getData: () => data };
+
+  render();
+  showView(location.hash.slice(1));
+};
+</script>
+
+<script>
+/* ---------- Запрошення ---------- */
+window.initInvite = () => {
+  const INVITE_KEY = "blackthorn-invite-v1";
+  const $ = (s, r = document) => r.querySelector(s);
+  const clone = x => JSON.parse(JSON.stringify(x));
+  const root = $("#invite");
+  let editing = false;
+
+  const PLAINTEXT = (() => {
+    try { const d = document.createElement("div"); d.contentEditable = "plaintext-only"; return d.contentEditable === "plaintext-only"; }
+    catch (e) { return false; }
+  })();
+
+  function normalize(d) {
+    d = d && typeof d === "object" ? d : {};
+    d.details = Array.isArray(d.details) ? d.details.map(r => ({ label: String((r && r.label) || ""), value: String((r && r.value) || "") })) : [];
+    return d;
+  }
+  const embedded = (() => { try { return normalize(window.BLACKTHORN_DATA.invitation); } catch (e) { return normalize({}); } })();
+  let data = (() => {
+    try { const s = localStorage.getItem(INVITE_KEY); if (s) return normalize(JSON.parse(s)); } catch (e) {}
+    return clone(embedded);
+  })();
+
+  let saveTimer;
+  function save(now) {
+    clearTimeout(saveTimer);
+    const run = () => {
+      try { localStorage.setItem(INVITE_KEY, JSON.stringify(data)); }
+      catch (e) { toast("Браузер не дозволив зберегти зміни. Скористайся «Зберегти файл»."); }
+    };
+    if (now) run(); else saveTimer = setTimeout(run, 300);
+  }
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+  function inline(s) { return esc(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>").replace(/\n/g, "<br>"); }
+  function prose(s) { return String(s || "").split(/\n{2,}/).filter(p => p.trim()).map(p => "<p>" + inline(p) + "</p>").join(""); }
+
+  function field(tag, obj, key, opts = {}) {
+    const el = document.createElement(tag);
+    if (opts.cls) el.className = opts.cls;
+    const v = obj[key] ?? "";
+    if (editing) {
+      el.textContent = v;
+      el.contentEditable = PLAINTEXT ? "plaintext-only" : "true";
+      el.classList.add("ed");
+      el.dataset.ph = opts.ph || "Порожньо";
+      el.setAttribute("role", "textbox");
+      el.setAttribute("aria-label", opts.label || opts.ph || key);
+      if (opts.multi) el.setAttribute("aria-multiline", "true");
+      el.addEventListener("keydown", e => { if (e.key === "Enter" && !opts.multi) { e.preventDefault(); el.blur(); } });
+      el.addEventListener("paste", e => {
+        if (PLAINTEXT) return;
+        e.preventDefault();
+        document.execCommand("insertText", false, e.clipboardData.getData("text/plain"));
+      });
+      el.addEventListener("input", () => {
+        obj[key] = el.innerText.replace(/\u00a0/g, " ").replace(/\r/g, "").replace(/\n$/, "");
+        save();
+      });
+    } else {
+      el.innerHTML = opts.multi && !opts.inlineView ? prose(v) : inline(v);
+    }
+    return el;
+  }
+
+  function button(cls, text, label, onClick) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = cls; b.textContent = text;
+    if (label) b.setAttribute("aria-label", label);
+    b.addEventListener("click", onClick);
+    return b;
+  }
+
+  function paperCard(extraCls) {
+    const art = document.createElement("article");
+    art.className = "card invite-card " + (extraCls || "");
+    art.innerHTML = '<div class="frame"><div class="frame-inner"><span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span></div></div>';
+    return [art, $(".frame-inner", art)];
+  }
+
+  function render() {
+    const y = window.scrollY;
+    [["caseNo", "#invite-case"], ["title", "#invite-title"], ["motto", "#invite-motto"]].forEach(([k, id]) => {
+      const old = $(id);
+      const el = field(old.tagName.toLowerCase(), data, k, { cls: old.className.replace(/\bed\b/g, "").trim(), ph: "…", label: k });
+      el.id = old.id;
+      old.replaceWith(el);
+    });
+    root.textContent = "";
+
+    if (editing) {
+      const ban = document.createElement("p");
+      ban.className = "edit-banner";
+      ban.textContent = "Режим редагування: клацніть на будь-який текст, щоб змінити його. Порожній рядок у «Деталях» на готовій сторінці не показується. Зміни зберігаються в браузері автоматично.";
+      root.appendChild(ban);
+    }
+
+    /* Картка запрошення */
+    const [card, inner] = paperCard("invite-main");
+    const head = document.createElement("header");
+    head.className = "inv-head";
+    const seal = field("div", data, "seal", { cls: "seal inv-seal", ph: "EB", label: "Печатка" });
+    if (!editing) seal.setAttribute("aria-hidden", "true");
+    head.append(
+      seal,
+      field("p", data, "house", { cls: "inv-house", ph: "Маєток", label: "Маєток" }),
+      field("p", data, "host", { cls: "inv-host", ph: "Хто запрошує", label: "Хто запрошує" }),
+      field("p", data, "honour", { cls: "inv-honour", ph: "має честь запросити вас", label: "Формула запрошення" }),
+      field("h2", data, "date", { cls: "inv-date", ph: "Дата", label: "Дата" }),
+      field("p", data, "time", { cls: "inv-time", ph: "Час", label: "Час" }),
+      field("p", data, "occasion", { cls: "inv-occasion", ph: "Привід", label: "Привід" })
+    );
+    inner.appendChild(head);
+
+    const fl = document.createElement("div");
+    fl.className = "flourish"; fl.setAttribute("aria-hidden", "true"); fl.textContent = "❧";
+    inner.appendChild(fl);
+
+    inner.appendChild(field("div", data, "letter", { cls: "inv-letter", multi: true, ph: "Текст листа…", label: "Лист" }));
+    inner.appendChild(field("p", data, "signature", { cls: "inv-sign", ph: "Підпис", label: "Підпис" }));
+
+    const det = document.createElement("section");
+    det.className = "inv-details";
+    const h3 = document.createElement("h3"); h3.textContent = "Деталі вечора";
+    det.appendChild(h3);
+    const dl = document.createElement("dl");
+    data.details.forEach((row, i) => {
+      if (!editing && !row.value.trim()) return;
+      const wrap = document.createElement("div");
+      wrap.className = "inv-row";
+      wrap.append(
+        field("dt", row, "label", { ph: "Назва", label: "Назва рядка " + (i + 1) }),
+        field("dd", row, "value", { multi: true, inlineView: true, ph: "Впишіть…", label: (row.label || "Рядок") + ": значення" })
+      );
+      if (editing) wrap.appendChild(button("mini-x", "✕", "Видалити рядок " + (i + 1), () => { data.details.splice(i, 1); save(true); render(); }));
+      dl.appendChild(wrap);
+    });
+    det.appendChild(dl);
+    if (editing) det.appendChild(button("add-row", "＋ рядок", null, () => { data.details.push({ label: "", value: "" }); save(true); render(); }));
+    inner.appendChild(det);
+    root.appendChild(card);
+
+    /* Зав'язка */
+    const [hook, hin] = paperCard("invite-hook");
+    hin.append(
+      field("h2", data, "hookTitle", { cls: "inv-hook-title", ph: "Заголовок", label: "Заголовок зав'язки" }),
+      field("div", data, "hook", { cls: "inv-hook-text", multi: true, ph: "Зав'язка історії…", label: "Зав'язка" })
+    );
+    root.appendChild(hook);
+
+    if (editing) window.scrollTo(0, y);
+  }
+
+  function setEditing(on) {
+    editing = on;
+    const b = $("#invite-edit");
+    b.classList.toggle("is-on", on);
+    b.setAttribute("aria-pressed", String(on));
+    b.textContent = on ? "✓ Готово" : "✎ Редагувати";
+    render();
+  }
+
+  let toastTimer;
+  function toast(msg, ms) {
+    const t = $("#toast");
+    t.textContent = msg; t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), ms || 2600);
+  }
+
+  $("#invite-edit").addEventListener("click", () => setEditing(!editing));
+  $("#invite-print").addEventListener("click", () => { if (editing) setEditing(false); window.print(); });
+  $("#invite-reset").addEventListener("click", () => {
+    if (!confirm("Повернути текст запрошення, вбудований у файл? Зміни в цьому браузері буде втрачено.")) return;
+    try { localStorage.removeItem(INVITE_KEY); } catch (e) {}
+    data = clone(embedded); render();
+    toast("Запрошення скинуто до вбудованого у файл");
+  });
+
+  window.BlackthornInvite = { getData: () => data };
+  render();
+};
+</script>
+
+
+
+</body></html>
