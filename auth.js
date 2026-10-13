@@ -58,10 +58,10 @@
   async function signIn(account, box, password) {
     if (account === "admin") {
       const d = await decrypt(box, password);
-      return { account, role: "admin", characters: d.characters, host: d.host, seals: d.seals || {}, guests: d.guests };
+      return { build: pub.build, account, role: "admin", characters: d.characters, host: d.host, seals: d.seals || {}, guests: d.guests };
     }
     const { guests, ...character } = await decrypt(box.open, password);
-    return { account, role: "player", character, guests, sealedBox: box.sealed, unsealed: !box.sealed };
+    return { build: pub.build, account, role: "player", character, guests, sealedBox: box.sealed, unsealed: !box.sealed };
   }
 
   function pageData(s) {
@@ -213,5 +213,6 @@
 
   let saved = null;
   try { saved = JSON.parse(sessionStorage.getItem(SESSION_KEY)); } catch (ignored) {}
-  if (saved && saved.guests && isKnown(saved.account) && saved.role === (saved.account === "admin" ? "admin" : "player")) start(saved);
+  // A rebuild means the saved copy is stale; ask to log in again.
+  if (saved && saved.build === pub.build && saved.guests && isKnown(saved.account) && saved.role === (saved.account === "admin" ? "admin" : "player")) start(saved);
 })();
