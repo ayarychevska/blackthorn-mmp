@@ -39,6 +39,7 @@
     <div class="view-tabs" role="tablist" aria-label="Сторінки">
       <button class="view-tab" type="button" role="tab" data-view="invite" aria-controls="view-invite" aria-selected="false">Запрошення</button>
       <button class="view-tab" type="button" role="tab" data-view="cards" aria-controls="view-cards" aria-selected="true"><span class="admin-only">Картки персонажів</span><span class="player-only">Мій персонаж</span></button>
+      <button class="view-tab" type="button" role="tab" data-view="guests" aria-controls="view-guests" aria-selected="false">Гості вечора</button>
       <button class="view-tab" type="button" role="tab" data-view="host" aria-controls="view-host" aria-selected="false">Сторінка ведучої</button>
     </div>
   </div>
@@ -99,6 +100,16 @@
   </header>
   <nav class="host-toc" id="host-toc" aria-label="Розділи сторінки ведучої"></nav>
   <main class="host-wrap" id="host" aria-live="polite"></main>
+</div>
+
+<div id="view-guests" hidden>
+  <header class="page-title">
+    <p class="case-no">Блекторн-Хол, 31 жовтня 1894</p>
+    <h1>Гості вечора</h1>
+    <div class="flourish" aria-hidden="true">❦</div>
+    <p class="motto" id="guests-motto"></p>
+  </header>
+  <main class="guests-wrap" id="guests" aria-live="polite"></main>
 </div>
 
 <div id="view-invite" hidden="">
@@ -1234,7 +1245,7 @@ window.initHost = () => {
   });
 
   /* ---------- Перемикання сторінок ---------- */
-  const VIEWS = ["cards", "host", "invite"];
+  const VIEWS = ["cards", "guests", "host", "invite"];
   function showView(v) {
     if (!VIEWS.includes(v)) v = "cards";
     VIEWS.forEach(n => {
@@ -1244,7 +1255,8 @@ window.initHost = () => {
     });
     document.querySelectorAll(".view-tab").forEach(t => t.setAttribute("aria-selected", String(t.dataset.view === v)));
     document.title = v === "host" ? (data.title || "Сторінка ведучої") + " — The Blackthorn Mystery"
-      : v === "invite" ? "Запрошення — The Blackthorn Mystery" : "The Blackthorn Mystery — Персонажі";
+      : v === "invite" ? "Запрошення — The Blackthorn Mystery"
+      : v === "guests" ? "Гості вечора — The Blackthorn Mystery" : "The Blackthorn Mystery — Персонажі";
   }
   document.querySelectorAll(".view-tab").forEach(t => t.addEventListener("click", () => {
     if (location.hash !== "#" + t.dataset.view) history.replaceState(null, "", "#" + t.dataset.view);
@@ -1442,6 +1454,99 @@ window.initInvite = () => {
   });
 
   window.BlackthornInvite = { getData: () => data };
+  render();
+};
+</script>
+
+<script>
+/* ---------- Гості вечора ---------- */
+window.initGuests = () => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const root = $("#guests");
+  const guests = window.BLACKTHORN_DATA.guests || { list: [], notes: {} };
+  const list = guests.list || [];
+  const canPick = !!guests.canPick;
+  let viewer = guests.viewer || null;
+
+  function el(tag, cls, text) {
+    const node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text) node.textContent = text;
+    return node;
+  }
+
+  function portrait(g) {
+    const wrap = el("div", "guest-portrait");
+    const fallback = () => {
+      wrap.textContent = "";
+      const seal = el("span", "seal guest-initials", g.initials || (g.name || "?").charAt(0));
+      seal.setAttribute("aria-hidden", "true");
+      wrap.appendChild(seal);
+    };
+    const candidates = [...new Set([g.portrait, ...["png", "jpg", "jpeg", "webp"].map(ext => `img/portraits/${g.id}.${ext}`)].filter(Boolean))];
+    const img = new Image();
+    img.alt = "Портрет: " + g.name;
+    img.onerror = () => { if (candidates.length) img.src = candidates.shift(); else fallback(); };
+    img.src = candidates.shift();
+    wrap.appendChild(img);
+    return wrap;
+  }
+
+  function card(g, notes, viewerName) {
+    const isViewer = g.id === viewer;
+    const art = el("article", "guest" + (g.victim ? " is-victim" : "") + (isViewer ? " is-viewer" : ""));
+    const pickable = canPick && !g.victim;
+    const head = el(pickable ? "button" : "div", "guest-head");
+    if (pickable) {
+      head.type = "button";
+      head.setAttribute("aria-pressed", String(isViewer));
+      head.title = isViewer ? "Зняти вибір" : "Показати, що знає цей персонаж";
+      head.addEventListener("click", () => { viewer = isViewer ? null : g.id; render(); });
+    }
+    head.appendChild(portrait(g));
+    head.appendChild(el("span", "guest-name", g.name));
+    if (g.player) head.appendChild(el("span", "guest-player", "Гравець: " + g.player));
+    art.appendChild(head);
+
+    if (isViewer) art.appendChild(el("p", "guest-self", canPick ? "Очима цього персонажа" : "Це ви"));
+    if (g.short) art.appendChild(el("p", "guest-short", g.short));
+
+    const note = !isViewer && notes[g.id];
+    if (note && note.trim()) {
+      const box = el("section", "guest-note");
+      box.appendChild(el("h3", null, canPick ? "Що знає " + viewerName : "Що ви знаєте"));
+      box.appendChild(el("p", null, note));
+      art.appendChild(box);
+    }
+    return art;
+  }
+
+  function render() {
+    root.textContent = "";
+    const viewerGuest = list.find(g => g.id === viewer);
+    const viewerName = viewerGuest ? viewerGuest.name : "";
+    $("#guests-motto").textContent = !canPick
+      ? "Те, що ви знаєте про тих, хто сидить сьогодні за столом."
+      : viewerGuest
+        ? "Очима персонажа: " + viewerName + ". Натисніть іншого, щоб змінити."
+        : "Натисніть на персонажа, щоб побачити, що він знає про інших.";
+
+    if (!list.length) {
+      root.appendChild(el("p", "guests-empty", "Список гостей поки порожній."));
+      return;
+    }
+    const notes = (viewer && guests.notes && guests.notes[viewer]) || {};
+    const victims = list.filter(g => g.victim);
+    if (victims.length) {
+      const sec = el("section", "guests-victim");
+      victims.forEach(g => sec.appendChild(card(g, notes, viewerName)));
+      root.appendChild(sec);
+    }
+    const grid = el("div", "guests-grid");
+    list.filter(g => !g.victim).forEach(g => grid.appendChild(card(g, notes, viewerName)));
+    root.appendChild(grid);
+  }
+
   render();
 };
 </script>

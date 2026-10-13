@@ -48,7 +48,8 @@
   async function loadBox(account) {
     const store = window.BLACKTHORN_ENC = window.BLACKTHORN_ENC || {};
     if (!store[account]) {
-      await loadScript(account === "admin" ? "data/admin.js" : `data/chars/${encodeURIComponent(account)}.js`);
+      const version = pub.build ? `?v=${encodeURIComponent(pub.build)}` : "";
+      await loadScript((account === "admin" ? "data/admin.js" : `data/chars/${encodeURIComponent(account)}.js`) + version);
     }
     if (!store[account]) throw new Error("Missing data for " + account);
     return store[account];
@@ -57,22 +58,27 @@
   async function signIn(account, box, password) {
     if (account === "admin") {
       const d = await decrypt(box, password);
-      return { account, role: "admin", characters: d.characters, host: d.host, seals: d.seals || {} };
+      return { account, role: "admin", characters: d.characters, host: d.host, seals: d.seals || {}, guests: d.guests };
     }
-    const character = await decrypt(box.open, password);
-    return { account, role: "player", character, sealedBox: box.sealed, unsealed: !box.sealed };
+    const { guests, ...character } = await decrypt(box.open, password);
+    return { account, role: "player", character, guests, sealedBox: box.sealed, unsealed: !box.sealed };
   }
 
   function pageData(s) {
+    const guests = s.guests || { list: [], notes: {} };
     if (s.role === "admin") {
-      return { role: "admin", characters: s.characters, host: s.host, invitation: pub.invitation, seals: s.seals };
+      return {
+        role: "admin", characters: s.characters, host: s.host, invitation: pub.invitation, seals: s.seals,
+        guests: { list: guests.list, notes: guests.notes, viewer: null, canPick: true }
+      };
     }
     return {
       role: "player",
       characters: { characters: [s.character] },
       host: { sections: [] },
       invitation: pub.invitation,
-      sealedIds: s.unsealed ? [] : [s.account]
+      sealedIds: s.unsealed ? [] : [s.account],
+      guests: { list: guests.list, notes: { [s.account]: guests.notes }, viewer: s.account, canPick: false }
     };
   }
 
@@ -87,6 +93,7 @@
     window.initCards();
     window.initHost();
     window.initInvite();
+    window.initGuests();
     activate(s.account);
   }
 
@@ -206,5 +213,5 @@
 
   let saved = null;
   try { saved = JSON.parse(sessionStorage.getItem(SESSION_KEY)); } catch (ignored) {}
-  if (saved && isKnown(saved.account) && saved.role === (saved.account === "admin" ? "admin" : "player")) start(saved);
+  if (saved && saved.guests && isKnown(saved.account) && saved.role === (saved.account === "admin" ? "admin" : "player")) start(saved);
 })();

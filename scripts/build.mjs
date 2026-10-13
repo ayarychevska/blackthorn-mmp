@@ -49,6 +49,20 @@ vm.runInNewContext(readFileSync(new URL("data.js", ROOT), "utf8"), sandbox);
 const data = sandbox.window.BLACKTHORN_DATA;
 const characters = data.characters.characters;
 
+const guestNotes = data.guests?.notes || {};
+const guestList = (data.guests?.list || []).map(g => {
+  const c = characters.find(x => x.id === g.id) || {};
+  return {
+    id: g.id,
+    name: g.name || c.name || "",
+    player: g.player ?? c.player ?? "",
+    initials: g.initials || c.initials || "",
+    short: g.short || "",
+    portrait: g.portrait || "",
+    victim: !!g.victim
+  };
+});
+
 const secrets = existsSync(SECRETS_PATH) ? JSON.parse(readFileSync(SECRETS_PATH, "utf8")) : {};
 secrets.admin = secrets.admin || randomCode(4);
 secrets.characters = secrets.characters || {};
@@ -65,6 +79,7 @@ rmSync(new URL("chars/", OUT), { recursive: true, force: true });
 mkdirSync(new URL("chars/", OUT), { recursive: true });
 
 writeFileSync(new URL("public.js", OUT), asScript("window.BLACKTHORN_PUBLIC", {
+  build: Date.now().toString(36),
   invitation: data.invitation,
   accounts: characters.map(c => ({ id: c.id, name: c.name }))
 }));
@@ -74,7 +89,7 @@ for (const c of characters) {
   const sealed = pick(c, SEALED_FIELDS);
   const hasSealed = SEALED_FIELDS.some(f => sealed[f].trim());
   const box = {
-    open: await encrypt(pick(c, OPEN_FIELDS), s.password),
+    open: await encrypt({ ...pick(c, OPEN_FIELDS), guests: { list: guestList, notes: guestNotes[c.id] || {} } }, s.password),
     sealed: hasSealed ? await encrypt(sealed, s.seal) : null
   };
   writeFileSync(new URL(`chars/${c.id}.js`, OUT),
@@ -83,6 +98,6 @@ for (const c of characters) {
 
 const seals = Object.fromEntries(characters.map(c => [c.id, secrets.characters[c.id].seal]));
 writeFileSync(new URL("admin.js", OUT), asScript("(window.BLACKTHORN_ENC = window.BLACKTHORN_ENC || {}).admin",
-  await encrypt({ characters: data.characters, host: data.host, seals }, secrets.admin)));
+  await encrypt({ characters: data.characters, host: data.host, seals, guests: { list: guestList, notes: guestNotes } }, secrets.admin)));
 
 console.log(`Encrypted ${characters.length} characters + admin into data/. Passwords and seal codes: secrets.json`);
