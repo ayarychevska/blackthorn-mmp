@@ -1,6 +1,6 @@
 (() => {
   const SESSION_KEY = "blackthorn-dossier-session";
-  const SEALED_FIELDS = ["secret", "goalMain", "goalExtra", "goalMini", "abilityName", "abilityText"];
+  const SEALED_FIELDS = ["knows", "secret", "goalMain", "goalExtra", "goalMini", "abilityName", "abilityText"];
   const pub = window.BLACKTHORN_PUBLIC;
   const form = document.querySelector("#login-form");
   const accountSelect = document.querySelector("#login-account");

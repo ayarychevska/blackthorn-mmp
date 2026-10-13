@@ -7,8 +7,8 @@ const ROOT = new URL("../", import.meta.url);
 const OUT = new URL("data/", ROOT);
 const SECRETS_PATH = new URL("secrets.json", ROOT);
 const ITERATIONS = 600000;
-const OPEN_FIELDS = ["id", "name", "role", "player", "initials", "who", "knows", "life", "past", "quirks"];
-const SEALED_FIELDS = ["secret", "goalMain", "goalExtra", "goalMini", "abilityName", "abilityText"];
+const OPEN_FIELDS = ["id", "name", "role", "player", "initials", "who", "life", "past", "quirks"];
+const SEALED_FIELDS = ["knows", "secret", "goalMain", "goalExtra", "goalMini", "abilityName", "abilityText"];
 const CHARSET = "abcdefghjkmnpqrstuvwxyz23456789";
 
 // Must match normalizeKey in auth.js.

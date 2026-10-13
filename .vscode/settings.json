@@ -1,0 +1,11 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "git check-ignore": true,
+        "Get-Item": true,
+        "Copy-Item": true,
+        "/^node scripts/build\\.mjs; git status --short$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}

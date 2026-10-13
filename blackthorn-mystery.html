@@ -38,7 +38,7 @@
     <span class="brand"><span class="seal mini-seal" aria-hidden="true">B</span>Blackthorn, приватне досьє</span>
     <div class="view-tabs" role="tablist" aria-label="Сторінки">
       <button class="view-tab" type="button" role="tab" data-view="invite" aria-controls="view-invite" aria-selected="false">Запрошення</button>
-      <button class="view-tab" type="button" role="tab" data-view="cards" aria-controls="view-cards" aria-selected="true">Картки персонажів</button>
+      <button class="view-tab" type="button" role="tab" data-view="cards" aria-controls="view-cards" aria-selected="true"><span class="admin-only">Картки персонажів</span><span class="player-only">Мій персонаж</span></button>
       <button class="view-tab" type="button" role="tab" data-view="host" aria-controls="view-host" aria-selected="false">Сторінка ведучої</button>
     </div>
   </div>
@@ -72,12 +72,18 @@
 </nav>
 
 <div id="view-cards">
-<header class="page-title">
+<header class="page-title admin-only">
   <p class="case-no">Справа № 01, рік 1894</p>
   <h1>Картки персонажів</h1>
   <div class="flourish" aria-hidden="true">❦</div>
   <p class="motto">Те, що знає кожен. Те, що приховує кожен.</p>
   <p class="status-line" id="status-line"></p>
+</header>
+<header class="page-title player-title player-only">
+  <p class="case-no">Особова справа · Блекторн-Хол, 1894</p>
+  <h1>Мій персонаж</h1>
+  <div class="flourish" aria-hidden="true">❦</div>
+  <p class="motto">Лише для ваших очей. Не показуйте цю сторінку іншим гостям.</p>
 </header>
 
 <main class="cards" id="cards" aria-live="polite"></main>
@@ -140,9 +146,8 @@
         <div class="flourish" aria-hidden="true">❧</div>
 
         <section class="sec" data-sec="who"><h3>Хто це</h3><p data-f="who"></p></section>
-        <section class="sec" data-sec="knows"><h3>Що знає</h3><p data-f="knows"></p></section>
 
-        <details class="lore" data-sec="lore">
+        <details class="lore" data-sec="lore" open>
           <summary>Минуле персонажа <span class="hint">— життя, події, дрібниці</span></summary>
           <div class="lore-body">
             <section class="lore-part" data-part="life"><h4>Життя</h4><p data-f="life"></p></section>
@@ -154,20 +159,25 @@
         <section class="sec sealed-note">
           <div class="seal sealed-wax" aria-hidden="true">B</div>
           <h3>Під печаткою</h3>
-          <p>Секрет, цілі та особливість відкриються, коли ведуча дасть код печатки.</p>
+          <p>Події вечора, секрет, цілі та особливість відкриються, коли ведуча дасть код печатки.</p>
           <form class="unseal-form" hidden>
             <label class="field"><span>Код печатки</span><input name="code" autocomplete="off" autocapitalize="off" spellcheck="false" required></label>
             <button class="btn btn-primary" type="submit">Зламати печатку</button>
             <p class="unseal-error" role="alert"></p>
           </form>
         </section>
-        <section class="sec" data-sec="secret"><h3>Секрет</h3><p data-f="secret"></p></section>
 
-        <section class="sec goal-main" data-sec="goalMain"><h3>Головна ціль</h3><p data-f="goalMain"></p></section>
-        <section class="sec goal" data-sec="goalExtra"><h3>Додаткова ціль</h3><p data-f="goalExtra"></p></section>
-        <section class="sec goal" data-sec="goalMini"><h3>Міні-ціль</h3><p data-f="goalMini"></p></section>
+        <section class="sec evening-part" data-sec="knows"><h3>Події вечора</h3><p data-f="knows"></p></section>
 
-        <section class="sec ability" data-sec="ability"><h3>Особливість</h3><p data-f="ability"></p></section>
+        <div class="sealed-part">
+          <section class="sec secret-block" data-sec="secret"><h3>Секрет</h3><p data-f="secret"></p></section>
+
+          <section class="sec goal-main" data-sec="goalMain"><h3>Головна ціль</h3><p data-f="goalMain"></p></section>
+          <section class="sec goal" data-sec="goalExtra"><h3>Додаткова ціль</h3><p data-f="goalExtra"></p></section>
+          <section class="sec goal" data-sec="goalMini"><h3>Міні-ціль</h3><p data-f="goalMini"></p></section>
+
+          <section class="sec ability" data-sec="ability"><h3>Особливість</h3><p data-f="ability"></p></section>
+        </div>
       </div>
     </div>
 
@@ -223,7 +233,7 @@
     <fieldset>
       <legend>Легенда</legend>
       <label class="field"><span>Хто це</span><textarea name="who" placeholder="Вік, характер, звички, коротка передісторія."></textarea></label>
-      <label class="field"><span>Що знає</span><textarea name="knows" placeholder="Що персонаж знає на початку гри."></textarea></label>
+      <label class="field"><span>Події вечора (що знає)</span><textarea name="knows" placeholder="Що персонаж знає про сьогоднішній вечір. Відкривається разом із секретом."></textarea></label>
       <label class="field"><span>Секрет</span><textarea name="secret" placeholder="Таємниця, яку персонаж приховує."></textarea></label>
     </fieldset>
 
@@ -271,7 +281,7 @@
 window.initCards = () => {
   const STORAGE_KEY = "blackthorn-dossier-v3";
   const REVEALED_KEY = "blackthorn-dossier-revealed";
-  const SEALED_FIELDS = ["secret", "goalMain", "goalExtra", "goalMini", "abilityName", "abilityText"];
+  const SEALED_FIELDS = ["knows", "secret", "goalMain", "goalExtra", "goalMini", "abilityName", "abilityText"];
   const FIELDS = ["name", "role", "player", "initials", "who", "knows", "secret",
                   "goalMain", "goalExtra", "goalMini", "abilityName", "abilityText",
                   "life", "past", "quirks"];
