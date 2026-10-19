@@ -1,5 +1,6 @@
 (() => {
   const SESSION_KEY = "blackthorn-dossier-session";
+  const HOST_TABS = '.view-tab[data-view="host"], .view-tab[data-view="props"], .view-tab[data-view="notes"]';
   const SEALED_FIELDS = ["knows", "secret", "goalMain", "goalExtra", "goalMini", "abilityName", "abilityText"];
   const pub = window.BLACKTHORN_PUBLIC;
   const form = document.querySelector("#login-form");
@@ -119,7 +120,7 @@
     document.querySelectorAll("#cards .card").forEach(card => {
       card.hidden = card.dataset.id !== characterId;
     });
-    document.querySelector('[data-view="host"]').hidden = true;
+    document.querySelectorAll(HOST_TABS).forEach(tab => { tab.hidden = true; });
   }
 
   function selectView(view) {
@@ -137,7 +138,7 @@
 
     if (isAdmin) {
       document.querySelectorAll("#cards .card").forEach(card => { card.hidden = false; });
-      document.querySelector('[data-view="host"]').hidden = false;
+      document.querySelectorAll(HOST_TABS).forEach(tab => { tab.hidden = false; });
       selectView("cards");
     } else {
       showCharacterOnly(account);

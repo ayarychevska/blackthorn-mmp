@@ -42,4 +42,4 @@ To change a password, edit `secrets.json` and run the build again.
 
 ## Editing and backups
 
-Admin edits are saved only in that browser's local storage. Use the "Експорт JSON" buttons to download them, copy the content into `data.js`, then run the build and redeploy.
+Card and invitation edits made in admin mode are saved only in that browser's local storage. The three host tabs are read-only and always show the text from `data.js`. To make a change permanent, edit `data.js`, then run the build and redeploy.

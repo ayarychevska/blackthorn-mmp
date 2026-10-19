@@ -41,35 +41,23 @@
       <button class="view-tab" type="button" role="tab" data-view="cards" aria-controls="view-cards" aria-selected="true"><span class="admin-only">Картки персонажів</span><span class="player-only">Мій персонаж</span></button>
       <button class="view-tab" type="button" role="tab" data-view="guests" aria-controls="view-guests" aria-selected="false">Гості вечора</button>
       <button class="view-tab" type="button" role="tab" data-view="host" aria-controls="view-host" aria-selected="false">Сторінка ведучої</button>
+      <button class="view-tab" type="button" role="tab" data-view="props" aria-controls="view-props" aria-selected="false">Реквізит і докази</button>
+      <button class="view-tab" type="button" role="tab" data-view="notes" aria-controls="view-notes" aria-selected="false">Нотатки</button>
     </div>
   </div>
   <div class="toolbar-actions" id="cards-actions">
     <button class="btn btn-primary" id="btn-add" type="button">＋ Новий персонаж</button>
     <button class="btn" id="btn-secrets" type="button" aria-pressed="false">Відкрити всіх</button>
-    <button class="btn" id="btn-export" type="button" title="Завантажити базу персонажів у форматі JSON">Експорт JSON</button>
-    <button class="btn" id="btn-import" type="button" title="Завантажити персонажів з файлу JSON">Імпорт JSON</button>
-    <button class="btn" id="btn-print" type="button">Друк / PDF</button>
     <button class="btn" id="btn-reset" type="button" title="Повернути дані, вбудовані у файл">Скинути</button>
-  </div>
-  <div class="toolbar-actions" id="host-actions" hidden="">
-    <button class="btn btn-primary" id="host-edit" type="button" aria-pressed="false">✎ Редагувати</button>
-    <button class="btn" id="host-json" type="button" title="Відкрити весь текст сторінки в JSON">JSON</button>
-    <button class="btn" id="host-export" type="button" title="Завантажити текст сторінки ведучої у форматі JSON">Експорт JSON</button>
-    <button class="btn" id="host-import" type="button" title="Завантажити текст сторінки ведучої з файлу JSON">Імпорт JSON</button>
-    <button class="btn" id="host-print" type="button">Друк / PDF</button>
-    <button class="btn" id="host-reset" type="button" title="Повернути текст, вбудований у файл">Скинути</button>
   </div>
   <div class="toolbar-actions" id="invite-actions" hidden="">
     <button class="btn btn-primary" id="invite-edit" type="button" aria-pressed="false">✎ Редагувати</button>
-    <button class="btn" id="invite-print" type="button">Друк / PDF</button>
     <button class="btn" id="invite-reset" type="button" title="Повернути текст, вбудований у файл">Скинути</button>
   </div>
   <div class="session-actions" hidden id="session-actions">
     <span id="session-name"></span>
     <button class="btn" id="logout" type="button">Вийти</button>
   </div>
-  <input type="file" id="import-input" accept="application/json,.json" hidden="">
-  <input type="file" id="host-import-input" accept="application/json,.json" hidden="">
 </nav>
 
 <div id="view-cards">
@@ -102,6 +90,30 @@
   <main class="host-wrap" id="host" aria-live="polite"></main>
 </div>
 
+<div id="view-props" hidden="">
+  <header class="page-title">
+    <p class="case-no">Справа № 01, рік 1894</p>
+    <h1>Реквізит і докази</h1>
+    <div class="flourish" aria-hidden="true">❦</div>
+    <p class="motto">Тексти для гри і речові докази.</p>
+    <span class="host-badge">Тільки для ведучої</span>
+  </header>
+  <nav class="host-toc" id="props-toc" aria-label="Розділи вкладки «Реквізит і докази»"></nav>
+  <main class="host-wrap" id="props" aria-live="polite"></main>
+</div>
+
+<div id="view-notes" hidden="">
+  <header class="page-title">
+    <p class="case-no">Справа № 01, рік 1894</p>
+    <h1>Нотатки</h1>
+    <div class="flourish" aria-hidden="true">❦</div>
+    <p class="motto">Голосування, фінал і все, що варто не забути.</p>
+    <span class="host-badge">Тільки для ведучої</span>
+  </header>
+  <nav class="host-toc" id="notes-toc" aria-label="Розділи вкладки «Нотатки»"></nav>
+  <main class="host-wrap" id="notes" aria-live="polite"></main>
+</div>
+
 <div id="view-guests" hidden>
   <header class="page-title">
     <p class="case-no">Блекторн-Хол, 31 жовтня 1894</p>
@@ -121,22 +133,6 @@
   </header>
   <main class="invite-wrap" id="invite" aria-live="polite"></main>
 </div>
-
-<dialog class="json-dialog" id="json-dialog" aria-labelledby="json-title">
-  <form method="dialog" id="json-form">
-    <div class="json-head">
-      <h2 id="json-title">Текст сторінки ведучої в JSON</h2>
-      <p>Тут увесь вміст сторінки. Можна змінювати текст, додавати розділи й блоки. Типи блоків: <b>text</b>, <b>quote</b>, <b>list</b>, <b>table</b>, <b>checklist</b>, <b>accordion</b>. Подвійні зірочки <b>**так**</b> роблять текст жирним.</p>
-    </div>
-    <textarea id="json-text" spellcheck="false" aria-label="JSON сторінки ведучої"></textarea>
-    <p class="json-error" id="json-error" role="alert"></p>
-    <div class="json-foot">
-      <button class="btn" type="button" id="json-copy">Копіювати</button>
-      <button class="btn" type="button" id="json-cancel">Скасувати</button>
-      <button class="btn btn-primary" type="button" id="json-apply">Застосувати</button>
-    </div>
-  </form>
-</dialog>
 
 
 <!-- Картка персонажа (шаблон для рендеру з JSON) -->
@@ -371,7 +367,7 @@ window.initCards = () => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
       return true;
     } catch (e) {
-      toast("Браузер не дозволив зберегти зміни. Скористайся «Експорт JSON» або «Зберегти файл».");
+      toast("Браузер не дозволив зберегти зміни.");
       return false;
     }
   }
@@ -673,52 +669,6 @@ window.initCards = () => {
     render();
   });
 
-  function download(filename, content, type) {
-    const blob = new Blob([content], { type });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }
-
-  $("#btn-export").addEventListener("click", () => {
-    download("blackthorn-characters.json", JSON.stringify(db, null, 2), "application/json");
-    toast("JSON завантажено");
-  });
-
-  $("#btn-import").addEventListener("click", () => $("#import-input").click());
-
-  $("#import-input").addEventListener("change", async e => {
-    const file = e.target.files[0];
-    e.target.value = "";
-    if (!file) return;
-    try {
-      const incoming = normalizeDb(JSON.parse(await file.text()));
-      if (!incoming) throw new Error("format");
-      const replace = db.characters.length === 0 || confirm(
-        `У файлі ${incoming.characters.length} ${plural(incoming.characters.length, "персонаж", "персонажі", "персонажів")}.\n\n` +
-        "OK — замінити поточних персонажів.\nСкасувати — додати їх до наявних."
-      );
-      if (replace) {
-        db = incoming;
-      } else {
-        const ids = new Set(db.characters.map(c => c.id));
-        incoming.characters.forEach(c => { if (ids.has(c.id)) c.id = uid(); db.characters.push(c); });
-      }
-      revealed.clear();
-      persist(); render();
-      toast(replace ? "Персонажів замінено з файлу" : "Персонажів додано з файлу");
-    } catch (err) {
-      toast("Цей файл не схожий на базу персонажів. Потрібен JSON, експортований з цієї сторінки.");
-    }
-  });
-
-  $("#btn-print").addEventListener("click", () => window.print());
-
   let closedForPrint = [];
   window.addEventListener("beforeprint", () => {
     closedForPrint = [...cardsEl.querySelectorAll(".lore:not([open])")];
@@ -775,22 +725,11 @@ window.initCards = () => {
 <script>
 /* ---------- Сторінка ведучої ---------- */
 window.initHost = () => {
-  const HOST_KEY = "blackthorn-host-v3";
+  const CHECKS_KEY = "blackthorn-host-checks-v1";
   const $ = (s, r = document) => r.querySelector(s);
-  const clone = x => JSON.parse(JSON.stringify(x));
   const ROMAN = ["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV","XV"];
   const BLOCK_TYPES = ["text", "quote", "list", "table", "checklist", "accordion"];
-
-  const root = $("#host");
-  const embedded = readEmbedded();
-  let data = load();
-  let editing = false;
-  const openAcc = new Set();
-
-  const PLAINTEXT = (() => {
-    try { const d = document.createElement("div"); d.contentEditable = "plaintext-only"; return d.contentEditable === "plaintext-only"; }
-    catch (e) { return false; }
-  })();
+  const TABS = ["host", "props", "notes"];
 
   /* ---------- Дані ---------- */
   function validate(d) {
@@ -809,6 +748,7 @@ window.initHost = () => {
   function normalize(d) {
     d.sections.forEach((s, i) => {
       s.id = s.id || "sec-" + i;
+      s.tab = TABS.includes(s.tab) ? s.tab : "host";
       s.title = s.title || "";
       s.intro = s.intro || "";
       s.blocks = s.blocks || [];
@@ -831,26 +771,17 @@ window.initHost = () => {
     catch (e) { return { sections: [] }; }
   }
 
-  function load() {
-    if (window.BLACKTHORN_DATA.role !== "admin") return clone(embedded);
-    try {
-      const saved = localStorage.getItem(HOST_KEY);
-      if (saved) {
-        const d = JSON.parse(saved);
-        if (!validate(d)) return normalize(d);
-      }
-    } catch (e) {}
-    return clone(embedded);
-  }
+  const data = readEmbedded();
+  const checks = loadChecks();
 
-  let saveTimer;
-  function save(now) {
-    clearTimeout(saveTimer);
-    const run = () => {
-      try { localStorage.setItem(HOST_KEY, JSON.stringify(data)); }
-      catch (e) { toast("Браузер не дозволив зберегти зміни. Скористайся «Експорт JSON» або «Зберегти файл»."); }
-    };
-    if (now) run(); else saveTimer = setTimeout(run, 300);
+  // The text always comes from data.js; only checklist ticks are remembered in this browser.
+  function loadChecks() {
+    if (window.BLACKTHORN_DATA.role !== "admin") return {};
+    try { return JSON.parse(localStorage.getItem(CHECKS_KEY)) || {}; }
+    catch (e) { return {}; }
+  }
+  function saveChecks() {
+    try { localStorage.setItem(CHECKS_KEY, JSON.stringify(checks)); } catch (e) {}
   }
 
   /* ---------- Форматування ---------- */
@@ -861,51 +792,24 @@ window.initHost = () => {
     return parts.map(p => "<p>" + inline(p) + "</p>").join("");
   }
 
-  /* Поле, яке в режимі редагування стає редагованим і пише назад у JSON */
-  function field(tag, obj, key, opts = {}) {
+  function html(tag, value, opts = {}) {
     const el = document.createElement(tag);
     if (opts.cls) el.className = opts.cls;
-    const v = obj[key] ?? "";
-    if (editing) {
-      el.textContent = v;
-      el.contentEditable = PLAINTEXT ? "plaintext-only" : "true";
-      el.classList.add("ed");
-      el.dataset.ph = opts.ph || "Порожньо";
-      el.setAttribute("role", "textbox");
-      if (opts.multi) el.setAttribute("aria-multiline", "true");
-      if (opts.label) el.setAttribute("aria-label", opts.label);
-      el.addEventListener("keydown", e => { if (e.key === "Enter" && !opts.multi) { e.preventDefault(); el.blur(); } });
-      el.addEventListener("paste", e => {
-        if (PLAINTEXT) return;
-        e.preventDefault();
-        document.execCommand("insertText", false, e.clipboardData.getData("text/plain"));
-      });
-      el.addEventListener("input", () => {
-        obj[key] = el.innerText.replace(/\u00a0/g, " ").replace(/\r/g, "").replace(/\n$/, "");
-        if (opts.onInput) opts.onInput();
-        save();
-      });
-    } else {
-      el.innerHTML = opts.multi && !opts.inlineView ? prose(v) : inline(v);
-    }
+    el.innerHTML = opts.multi ? prose(value) : inline(value ?? "");
     return el;
   }
 
-  function button(cls, text, label, onClick) {
+  function button(cls, text, onClick) {
     const b = document.createElement("button");
     b.type = "button";
     b.className = cls;
     b.textContent = text;
-    if (label) b.setAttribute("aria-label", label);
     b.addEventListener("click", onClick);
     return b;
   }
-  const removeBtn = (label, fn) => button("mini-x", "✕", label, () => { fn(); save(true); render(); });
-  const addBtn = (text, fn) => button("add-row", "＋ " + text, null, () => { fn(); save(true); render(); });
 
-  function blockTitle(wrap, b, ph) {
-    if (editing) wrap.appendChild(field("h3", b, "title", { ph: ph || "Заголовок блоку (необов'язково)", label: "Заголовок блоку" }));
-    else if (b.title) wrap.appendChild(field("h3", b, "title"));
+  function blockTitle(wrap, b) {
+    if (b.title) wrap.appendChild(html("h3", b.title));
   }
 
   /* ---------- Блоки ---------- */
@@ -914,7 +818,7 @@ window.initHost = () => {
       const w = document.createElement("div");
       w.className = "hb hb-text";
       blockTitle(w, b);
-      w.appendChild(field("div", b, "body", { cls: "prose", multi: true, ph: "Текст…", label: "Текст" }));
+      w.appendChild(html("div", b.body, { cls: "prose", multi: true }));
       return w;
     },
 
@@ -930,19 +834,8 @@ window.initHost = () => {
       blockTitle(w, b);
       const ul = document.createElement("ul");
       ul.className = "bullets";
-      b.items.forEach((_, i) => {
-        const li = document.createElement("li");
-        if (editing) {
-          li.className = "editing-row";
-          li.append(field("span", b.items, i, { multi: true, ph: "Пункт списку", label: "Пункт " + (i + 1) }),
-                    removeBtn("Видалити пункт " + (i + 1), () => b.items.splice(i, 1)));
-        } else {
-          li.innerHTML = inline(b.items[i]);
-        }
-        ul.appendChild(li);
-      });
+      b.items.forEach(item => ul.appendChild(html("li", item)));
       w.appendChild(ul);
-      if (editing) w.appendChild(addBtn("пункт", () => b.items.push("")));
       return w;
     },
 
@@ -954,72 +847,57 @@ window.initHost = () => {
       wrap.className = "table-wrap";
       const t = document.createElement("table");
       const thead = t.createTHead().insertRow();
-      b.columns.forEach((_, k) => {
+      b.columns.forEach(col => {
         const th = document.createElement("th");
         th.scope = "col";
-        th.appendChild(field("span", b.columns, k, { ph: "Колонка", label: "Назва колонки " + (k + 1) }));
+        th.appendChild(html("span", col));
         thead.appendChild(th);
       });
-      if (editing) { const th = document.createElement("th"); th.className = "ctl"; th.innerHTML = '<span class="visually-hidden">Дії</span>'; thead.appendChild(th); }
       const tb = t.createTBody();
-      b.rows.forEach((row, r) => {
+      b.rows.forEach(row => {
         const tr = tb.insertRow();
-        row.forEach((_, k) => {
-          const td = tr.insertCell();
-          td.appendChild(field("div", row, k, { multi: true, inlineView: true, ph: "—", label: `${b.columns[k] || "Клітинка"}, рядок ${r + 1}` }));
-        });
-        if (editing) { const td = tr.insertCell(); td.className = "ctl"; td.appendChild(removeBtn("Видалити рядок " + (r + 1), () => b.rows.splice(r, 1))); }
+        row.forEach(cell => tr.insertCell().appendChild(html("div", cell)));
       });
       wrap.appendChild(t);
       w.appendChild(wrap);
-      if (editing) w.appendChild(addBtn("рядок", () => b.rows.push(b.columns.map(() => ""))));
       return w;
     },
 
-    checklist(b) {
+    checklist(b, key) {
       const w = document.createElement("div");
       w.className = "hb hb-check";
       const head = document.createElement("div");
       head.className = "check-head";
-      blockTitle(head, b, "Назва списку");
+      blockTitle(head, b);
       if (!head.firstChild) head.appendChild(document.createElement("h3"));
       const count = document.createElement("span");
       count.className = "check-count";
-      const upd = () => { count.textContent = `${b.items.filter(i => i.done).length} / ${b.items.length}`; };
-      upd();
       head.appendChild(count);
       w.appendChild(head);
       const ul = document.createElement("ul");
       ul.className = "checklist";
+      const upd = () => { count.textContent = `${ul.querySelectorAll("input:checked").length} / ${b.items.length}`; };
       b.items.forEach((it, i) => {
+        const ck = `${key}:${i}`;
+        const done = ck in checks ? checks[ck] : it.done;
         const li = document.createElement("li");
-        if (it.done) li.classList.add("done");
+        if (done) li.classList.add("done");
         const box = document.createElement("input");
         box.type = "checkbox";
-        box.checked = it.done;
-        const text = field("span", it, "text", { cls: "ck-text", multi: true, inlineView: true, ph: "Що підготувати", label: "Пункт " + (i + 1) });
-        if (!editing) {
-          const id = `ck-${Math.random().toString(36).slice(2, 9)}`;
-          box.id = id;
-          const lab = document.createElement("label");
-          lab.htmlFor = id;
-          lab.className = "ck-text";
-          lab.innerHTML = text.innerHTML;
-          li.append(box, lab);
-        } else {
-          box.setAttribute("aria-label", "Виконано: пункт " + (i + 1));
-          li.className += " editing-row";
-          li.append(box, text, removeBtn("Видалити пункт " + (i + 1), () => b.items.splice(i, 1)));
-        }
-        box.addEventListener("change", () => { it.done = box.checked; li.classList.toggle("done", it.done); upd(); save(true); });
+        box.checked = done;
+        box.id = `ck-${Math.random().toString(36).slice(2, 9)}`;
+        const lab = html("label", it.text, { cls: "ck-text" });
+        lab.htmlFor = box.id;
+        li.append(box, lab);
+        box.addEventListener("change", () => { checks[ck] = box.checked; li.classList.toggle("done", box.checked); upd(); saveChecks(); });
         ul.appendChild(li);
       });
       w.appendChild(ul);
-      if (editing) w.appendChild(addBtn("пункт", () => b.items.push({ text: "", done: false })));
+      upd();
       return w;
     },
 
-    accordion(b, key) {
+    accordion(b) {
       const w = document.createElement("div");
       w.className = "hb hb-acc";
       blockTitle(w, b);
@@ -1027,7 +905,7 @@ window.initHost = () => {
       tools.className = "acc-tools";
       const acc = document.createElement("div");
       acc.className = "acc";
-      const toggleAll = button("linkish", "", null, () => {
+      const toggleAll = button("linkish", "", () => {
         const items = [...acc.querySelectorAll(".acc-item")];
         const open = !items.every(d => d.open);
         items.forEach(d => { d.open = open; });
@@ -1039,77 +917,44 @@ window.initHost = () => {
       tools.appendChild(toggleAll);
       if (b.items.length > 1) w.appendChild(tools);
 
-      b.items.forEach((it, i) => {
-        const k = `${key}:${i}`;
+      b.items.forEach(it => {
         const d = document.createElement("details");
         d.className = "acc-item";
-        d.open = openAcc.has(k);
-        d.addEventListener("toggle", () => { d.open ? openAcc.add(k) : openAcc.delete(k); syncToggle(); });
+        d.addEventListener("toggle", syncToggle);
         const s = document.createElement("summary");
         const label = document.createElement("span");
         label.className = "acc-label";
-        const tt = document.createElement("span"); tt.className = "acc-title"; tt.innerHTML = inline(it.title || "Без назви");
-        label.appendChild(tt);
-        if (it.subtitle) { const st = document.createElement("span"); st.className = "acc-sub"; st.innerHTML = inline(it.subtitle); label.appendChild(st); }
+        label.appendChild(html("span", it.title || "Без назви", { cls: "acc-title" }));
+        if (it.subtitle) label.appendChild(html("span", it.subtitle, { cls: "acc-sub" }));
         s.appendChild(label);
         d.appendChild(s);
-
         const body = document.createElement("div");
         body.className = "acc-body";
-        if (editing) {
-          const f = document.createElement("div");
-          f.className = "acc-edit-fields";
-          const l1 = document.createElement("label"); l1.textContent = "Назва";
-          l1.appendChild(field("span", it, "title", { ph: "Назва реквізиту", label: "Назва", onInput: () => { tt.innerHTML = inline(it.title || "Без назви"); } }));
-          const l2 = document.createElement("label"); l2.textContent = "Підпис";
-          l2.appendChild(field("span", it, "subtitle", { ph: "Коротко: хто, коли", label: "Підпис" }));
-          f.append(l1, l2);
-          body.appendChild(f);
-        }
-        body.appendChild(field("div", it, "body", { cls: "prose", multi: true, ph: "Повний текст…", label: "Текст" }));
-        if (editing) {
-          const row = document.createElement("div");
-          row.style.cssText = "display:flex;justify-content:flex-end;margin-top:8px";
-          row.appendChild(button("add-row", "Видалити цей елемент", null, () => {
-            if (!confirm(`Видалити «${it.title || "без назви"}»?`)) return;
-            b.items.splice(i, 1); openAcc.clear(); save(true); render();
-          }));
-          body.appendChild(row);
-        }
+        body.appendChild(html("div", it.body, { cls: "prose", multi: true }));
         d.appendChild(body);
         acc.appendChild(d);
       });
       w.appendChild(acc);
       syncToggle();
-      if (editing) w.appendChild(addBtn("елемент", () => { b.items.push({ title: "Новий реквізит", subtitle: "", body: "" }); openAcc.add(`${key}:${b.items.length - 1}`); }));
       return w;
     }
   };
 
   /* ---------- Рендер ---------- */
   function render() {
-    const y = window.scrollY;
-    ["caseNo", "title", "motto"].forEach(k => {
-      const id = { caseNo: "#host-case", title: "#host-title", motto: "#host-motto" }[k];
-      const old = $(id);
-      const el = field(old.tagName.toLowerCase(), data, k, { cls: old.className.replace(/\bed\b/g, "").trim(), ph: "…", label: k });
-      el.id = old.id;
-      old.replaceWith(el);
+    [["caseNo", "#host-case"], ["title", "#host-title"], ["motto", "#host-motto"]].forEach(([k, sel]) => {
+      if (data[k]) $(sel).innerHTML = inline(data[k]);
     });
-    document.title = (data.title || "Сторінка ведучої") + " — The Blackthorn Mystery";
 
-    const toc = $("#host-toc");
-    toc.textContent = "";
-    root.textContent = "";
+    const roots = {}, tocs = {}, counts = {};
+    TABS.forEach(t => {
+      roots[t] = $("#" + t); tocs[t] = $("#" + t + "-toc"); counts[t] = 0;
+      roots[t].textContent = ""; tocs[t].textContent = "";
+    });
 
-    if (editing) {
-      const ban = document.createElement("p");
-      ban.className = "edit-banner";
-      ban.textContent = "Режим редагування: клацніть на будь-який текст, щоб змінити його. Зміни зберігаються в браузері автоматично. **Подвійні зірочки** роблять текст жирним.";
-      root.appendChild(ban);
-    }
-
-    data.sections.forEach((sec, si) => {
+    data.sections.forEach(sec => {
+      const toc = tocs[sec.tab], root = roots[sec.tab];
+      const si = counts[sec.tab]++;
       const a = document.createElement("a");
       a.href = "#host-" + sec.id;
       a.textContent = sec.title || "Розділ " + (si + 1);
@@ -1130,9 +975,9 @@ window.initHost = () => {
       const num = document.createElement("span");
       num.className = "host-num";
       num.textContent = ROMAN[si] || String(si + 1);
-      head.append(num, field("h2", sec, "title", { ph: "Назва розділу", label: "Назва розділу", onInput: () => { a.textContent = sec.title || "Розділ " + (si + 1); } }));
+      head.append(num, html("h2", sec.title));
       inner.appendChild(head);
-      if (sec.intro || editing) inner.appendChild(field("p", sec, "intro", { cls: "host-intro", multi: false, ph: "Короткий вступ (необов'язково)", label: "Вступ до розділу" }));
+      if (sec.intro) inner.appendChild(html("p", sec.intro, { cls: "host-intro" }));
 
       sec.blocks.forEach((b, bi) => {
         const r = renderers[b.type];
@@ -1140,103 +985,12 @@ window.initHost = () => {
       });
       root.appendChild(art);
     });
-    if (editing) window.scrollTo(0, y);
+    TABS.forEach(t => { tocs[t].hidden = counts[t] < 2; });
   }
-
-  /* ---------- Дії ---------- */
-  function setEditing(on) {
-    editing = on;
-    const b = $("#host-edit");
-    b.classList.toggle("is-on", on);
-    b.setAttribute("aria-pressed", String(on));
-    b.textContent = on ? "✓ Готово" : "✎ Редагувати";
-    render();
-  }
-
-  function download(name, content, type) {
-    const url = URL.createObjectURL(new Blob([content], { type }));
-    const a = document.createElement("a");
-    a.href = url; a.download = name;
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }
-
-  let toastTimer;
-  function toast(msg, ms) {
-    const t = $("#toast");
-    t.textContent = msg;
-    t.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove("show"), ms || 2600);
-  }
-
-  $("#host-edit").addEventListener("click", () => setEditing(!editing));
-
-  const dlg = $("#json-dialog");
-  $("#host-json").addEventListener("click", () => {
-    $("#json-text").value = JSON.stringify(data, null, 2);
-    $("#json-error").textContent = "";
-    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
-    $("#json-text").focus();
-    $("#json-text").setSelectionRange(0, 0);
-    $("#json-text").scrollTop = 0;
-  });
-  const closeDlg = () => { if (dlg.close) dlg.close(); else dlg.removeAttribute("open"); };
-  $("#json-cancel").addEventListener("click", closeDlg);
-  $("#json-copy").addEventListener("click", async () => {
-    try { await navigator.clipboard.writeText($("#json-text").value); toast("JSON скопійовано"); }
-    catch (e) { $("#json-text").select(); toast("Виділено — скопіюй через Ctrl+C"); }
-  });
-  $("#json-apply").addEventListener("click", () => {
-    let d;
-    try { d = JSON.parse($("#json-text").value); }
-    catch (e) { $("#json-error").textContent = "Помилка в JSON: " + e.message; return; }
-    const err = validate(d);
-    if (err) { $("#json-error").textContent = err; return; }
-    data = normalize(d);
-    openAcc.clear();
-    save(true); render(); closeDlg();
-    toast("Сторінку ведучої оновлено з JSON");
-  });
-  $("#json-text").addEventListener("keydown", e => {
-    if (e.key === "Tab" && !e.shiftKey && !e.ctrlKey && !e.altKey && !e.metaKey) {
-      e.preventDefault();
-      const t = e.target, s = t.selectionStart;
-      t.setRangeText("  ", s, t.selectionEnd, "end");
-    }
-  });
-
-  $("#host-export").addEventListener("click", () => {
-    download("blackthorn-host.json", JSON.stringify(data, null, 2), "application/json");
-    toast("JSON сторінки ведучої завантажено");
-  });
-  $("#host-import").addEventListener("click", () => $("#host-import-input").click());
-  $("#host-import-input").addEventListener("change", async e => {
-    const file = e.target.files[0];
-    e.target.value = "";
-    if (!file) return;
-    try {
-      const d = JSON.parse(await file.text());
-      const err = validate(d);
-      if (err) { toast("Файл не підходить: " + err, 6000); return; }
-      if (!confirm("Замінити весь вміст сторінки ведучої даними з файлу?")) return;
-      data = normalize(d); openAcc.clear(); save(true); render();
-      toast("Сторінку ведучої завантажено з файлу");
-    } catch (err) {
-      toast("Це не JSON. Потрібен файл, експортований зі сторінки ведучої.", 6000);
-    }
-  });
-  $("#host-reset").addEventListener("click", () => {
-    if (!confirm("Повернути текст сторінки ведучої, вбудований у файл? Зміни в цьому браузері буде втрачено.")) return;
-    try { localStorage.removeItem(HOST_KEY); } catch (e) {}
-    data = clone(embedded); openAcc.clear(); render();
-    toast("Сторінку ведучої скинуто до вбудованої у файл");
-  });
-  $("#host-print").addEventListener("click", () => window.print());
 
   let closedForPrint = [];
   window.addEventListener("beforeprint", () => {
-    closedForPrint = [...root.querySelectorAll(".acc-item:not([open])")];
+    closedForPrint = TABS.flatMap(t => [...$("#" + t).querySelectorAll(".acc-item:not([open])")]);
     closedForPrint.forEach(d => { d.open = true; });
   });
   window.addEventListener("afterprint", () => {
@@ -1245,9 +999,10 @@ window.initHost = () => {
   });
 
   /* ---------- Перемикання сторінок ---------- */
-  const VIEWS = ["cards", "guests", "host", "invite"];
+  const VIEWS = ["cards", "guests", "invite", ...TABS];
+  const isAdmin = window.BLACKTHORN_DATA.role === "admin";
   function showView(v) {
-    if (!VIEWS.includes(v)) v = "cards";
+    if (!VIEWS.includes(v) || (!isAdmin && TABS.includes(v))) v = "cards";
     VIEWS.forEach(n => {
       const view = $("#view-" + n), act = $("#" + n + "-actions");
       if (view) view.hidden = n !== v;
@@ -1255,6 +1010,8 @@ window.initHost = () => {
     });
     document.querySelectorAll(".view-tab").forEach(t => t.setAttribute("aria-selected", String(t.dataset.view === v)));
     document.title = v === "host" ? (data.title || "Сторінка ведучої") + " — The Blackthorn Mystery"
+      : v === "props" ? "Реквізит і докази — The Blackthorn Mystery"
+      : v === "notes" ? "Нотатки — The Blackthorn Mystery"
       : v === "invite" ? "Запрошення — The Blackthorn Mystery"
       : v === "guests" ? "Гості вечора — The Blackthorn Mystery" : "The Blackthorn Mystery — Персонажі";
   }
@@ -1302,7 +1059,7 @@ window.initInvite = () => {
     clearTimeout(saveTimer);
     const run = () => {
       try { localStorage.setItem(INVITE_KEY, JSON.stringify(data)); }
-      catch (e) { toast("Браузер не дозволив зберегти зміни. Скористайся «Зберегти файл»."); }
+      catch (e) { toast("Браузер не дозволив зберегти зміни."); }
     };
     if (now) run(); else saveTimer = setTimeout(run, 300);
   }
@@ -1445,7 +1202,6 @@ window.initInvite = () => {
   }
 
   $("#invite-edit").addEventListener("click", () => setEditing(!editing));
-  $("#invite-print").addEventListener("click", () => { if (editing) setEditing(false); window.print(); });
   $("#invite-reset").addEventListener("click", () => {
     if (!confirm("Повернути текст запрошення, вбудований у файл? Зміни в цьому браузері буде втрачено.")) return;
     try { localStorage.removeItem(INVITE_KEY); } catch (e) {}

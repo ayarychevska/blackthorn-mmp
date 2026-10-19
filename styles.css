@@ -878,6 +878,7 @@ legend {
   letter-spacing: .1em;
 }
 .host-toc { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 22px auto 30px; }
+.host-toc[hidden] { display: none; }
 .host-toc a {
   padding: 5px 13px 6px;
   color: var(--gold-soft);
@@ -1097,40 +1098,6 @@ legend {
 .hb ul.bullets li.editing-row, .checklist li.editing-row { display: flex; gap: 8px; align-items: flex-start; }
 .hb ul.bullets li.editing-row > .ed { flex: 1; }
 
-/* ---------- Редактор JSON ---------- */
-.json-dialog {
-  width: min(900px, calc(100% - 24px));
-  max-height: calc(100vh - 40px);
-  padding: 0;
-  color: var(--ink);
-  background: var(--paper-light);
-  border: 1px solid var(--gold);
-  box-shadow: 0 30px 80px rgb(0 0 0 / 60%);
-}
-.json-dialog::backdrop { background: rgb(15 3 7 / 72%); }
-.json-dialog form { display: flex; flex-direction: column; max-height: calc(100vh - 42px); }
-.json-head { padding: 18px 22px 10px; border-bottom: 1px solid var(--line); }
-.json-head h2 { margin: 0; color: var(--wine); font-size: 28px; font-weight: 500; }
-.json-head p { margin: 4px 0 0; color: var(--muted); font-size: 16px; line-height: 1.4; }
-.json-dialog textarea {
-  flex: 1;
-  min-height: 50vh;
-  margin: 0;
-  padding: 14px 18px;
-  border: 0;
-  resize: none;
-  color: var(--ink);
-  background: #fffaf0;
-  font: 14px/1.5 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  tab-size: 2;
-}
-.json-dialog textarea:focus-visible { outline: 2px solid var(--gold); outline-offset: -2px; }
-.json-error { min-height: 0; margin: 0; padding: 0 22px; color: #9b1c2e; font-size: 16px; }
-.json-error:not(:empty) { padding-top: 8px; }
-.json-foot { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; padding: 12px 22px 16px; border-top: 1px solid var(--line); }
-.json-foot .btn { color: var(--wine); border-color: var(--line); }
-.json-foot .btn-primary { color: #f7ead0; border-color: var(--gold); }
-
 @media (max-width: 560px) {
   .host-sec > .frame > .frame-inner { padding: 24px 18px 16px; }
   .prose, .hb ul.bullets li, .checklist li { font-size: 17px; }
@@ -1142,7 +1109,7 @@ legend {
 }
 
 @media print {
-  #view-host .page-title h1 { color: var(--wine); }
+  :is(#view-host, #view-props, #view-notes) .page-title h1 { color: var(--wine); }
   .host-toc, .edit-banner, .acc-tools, .mini-x, .add-row, .host-badge { display: none !important; }
   .host-wrap { width: 100%; margin: 0; }
   .host-sec { box-shadow: none; margin-bottom: 6mm; break-inside: auto; }
@@ -1287,10 +1254,11 @@ legend {
 .login-form .btn { justify-self: center; margin-top: 8px; }
 .login-error { min-height: 1.4em; margin: 2px 0 0; color: #9b1c2e; font-size: 16px; }
 .session-actions { display: flex; align-items: center; gap: 10px; color: var(--gold-soft); font-size: 16px; }
-.character-mode #host-actions,
 .character-mode #cards-actions,
 .character-mode #invite-actions,
 .character-mode [data-view="host"],
+.character-mode [data-view="props"],
+.character-mode [data-view="notes"],
 .character-mode .card-actions { display: none !important; }
 .character-mode .admin-only,
 body:not(.character-mode) .player-only { display: none !important; }
