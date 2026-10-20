@@ -717,6 +717,8 @@ window.initHost = () => {
   const ROMAN = ["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV","XV"];
   const BLOCK_TYPES = ["text", "quote", "list", "table", "checklist", "accordion"];
   const TABS = ["host", "props"];
+  // Sections that go to «Реквізит і нотатки» even when data.js has no "tab" field for them.
+  const DEFAULT_TAB = { props: "props", scoring: "props", notes: "props" };
 
   /* ---------- Дані ---------- */
   function validate(d) {
@@ -735,7 +737,7 @@ window.initHost = () => {
   function normalize(d) {
     d.sections.forEach((s, i) => {
       s.id = s.id || "sec-" + i;
-      s.tab = TABS.includes(s.tab) ? s.tab : "host";
+      s.tab = TABS.includes(s.tab) ? s.tab : DEFAULT_TAB[s.id] || "host";
       s.title = s.title || "";
       s.intro = s.intro || "";
       s.blocks = s.blocks || [];
