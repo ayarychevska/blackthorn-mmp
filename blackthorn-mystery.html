@@ -41,8 +41,7 @@
       <button class="view-tab" type="button" role="tab" data-view="cards" aria-controls="view-cards" aria-selected="true"><span class="admin-only">Картки персонажів</span><span class="player-only">Мій персонаж</span></button>
       <button class="view-tab" type="button" role="tab" data-view="guests" aria-controls="view-guests" aria-selected="false">Гості вечора</button>
       <button class="view-tab" type="button" role="tab" data-view="host" aria-controls="view-host" aria-selected="false">Сторінка ведучої</button>
-      <button class="view-tab" type="button" role="tab" data-view="props" aria-controls="view-props" aria-selected="false">Реквізит і докази</button>
-      <button class="view-tab" type="button" role="tab" data-view="notes" aria-controls="view-notes" aria-selected="false">Нотатки</button>
+      <button class="view-tab" type="button" role="tab" data-view="props" aria-controls="view-props" aria-selected="false">Реквізит і нотатки</button>
     </div>
   </div>
   <div class="toolbar-actions" id="cards-actions">
@@ -93,25 +92,13 @@
 <div id="view-props" hidden="">
   <header class="page-title">
     <p class="case-no">Справа № 01, рік 1894</p>
-    <h1>Реквізит і докази</h1>
+    <h1>Реквізит і нотатки</h1>
     <div class="flourish" aria-hidden="true">❦</div>
-    <p class="motto">Тексти для гри і речові докази.</p>
+    <p class="motto">Реквізит, докази, голосування і все, що варто не забути.</p>
     <span class="host-badge">Тільки для ведучої</span>
   </header>
-  <nav class="host-toc" id="props-toc" aria-label="Розділи вкладки «Реквізит і докази»"></nav>
+  <nav class="host-toc" id="props-toc" aria-label="Розділи вкладки «Реквізит і нотатки»"></nav>
   <main class="host-wrap" id="props" aria-live="polite"></main>
-</div>
-
-<div id="view-notes" hidden="">
-  <header class="page-title">
-    <p class="case-no">Справа № 01, рік 1894</p>
-    <h1>Нотатки</h1>
-    <div class="flourish" aria-hidden="true">❦</div>
-    <p class="motto">Голосування, фінал і все, що варто не забути.</p>
-    <span class="host-badge">Тільки для ведучої</span>
-  </header>
-  <nav class="host-toc" id="notes-toc" aria-label="Розділи вкладки «Нотатки»"></nav>
-  <main class="host-wrap" id="notes" aria-live="polite"></main>
 </div>
 
 <div id="view-guests" hidden>
@@ -729,7 +716,7 @@ window.initHost = () => {
   const $ = (s, r = document) => r.querySelector(s);
   const ROMAN = ["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV","XV"];
   const BLOCK_TYPES = ["text", "quote", "list", "table", "checklist", "accordion"];
-  const TABS = ["host", "props", "notes"];
+  const TABS = ["host", "props"];
 
   /* ---------- Дані ---------- */
   function validate(d) {
@@ -1010,8 +997,7 @@ window.initHost = () => {
     });
     document.querySelectorAll(".view-tab").forEach(t => t.setAttribute("aria-selected", String(t.dataset.view === v)));
     document.title = v === "host" ? (data.title || "Сторінка ведучої") + " — The Blackthorn Mystery"
-      : v === "props" ? "Реквізит і докази — The Blackthorn Mystery"
-      : v === "notes" ? "Нотатки — The Blackthorn Mystery"
+      : v === "props" ? "Реквізит і нотатки — The Blackthorn Mystery"
       : v === "invite" ? "Запрошення — The Blackthorn Mystery"
       : v === "guests" ? "Гості вечора — The Blackthorn Mystery" : "The Blackthorn Mystery — Персонажі";
   }

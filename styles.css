@@ -1109,7 +1109,7 @@ legend {
 }
 
 @media print {
-  :is(#view-host, #view-props, #view-notes) .page-title h1 { color: var(--wine); }
+  :is(#view-host, #view-props) .page-title h1 { color: var(--wine); }
   .host-toc, .edit-banner, .acc-tools, .mini-x, .add-row, .host-badge { display: none !important; }
   .host-wrap { width: 100%; margin: 0; }
   .host-sec { box-shadow: none; margin-bottom: 6mm; break-inside: auto; }
@@ -1258,7 +1258,6 @@ legend {
 .character-mode #invite-actions,
 .character-mode [data-view="host"],
 .character-mode [data-view="props"],
-.character-mode [data-view="notes"],
 .character-mode .card-actions { display: none !important; }
 .character-mode .admin-only,
 body:not(.character-mode) .player-only { display: none !important; }

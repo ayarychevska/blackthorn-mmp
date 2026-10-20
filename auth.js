@@ -1,6 +1,6 @@
 (() => {
   const SESSION_KEY = "blackthorn-dossier-session";
-  const HOST_TABS = '.view-tab[data-view="host"], .view-tab[data-view="props"], .view-tab[data-view="notes"]';
+  const HOST_TABS = '.view-tab[data-view="host"], .view-tab[data-view="props"]';
   const SEALED_FIELDS = ["knows", "secret", "goalMain", "goalExtra", "goalMini", "abilityName", "abilityText"];
   const pub = window.BLACKTHORN_PUBLIC;
   const form = document.querySelector("#login-form");
