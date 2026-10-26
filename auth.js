@@ -4,14 +4,13 @@
   const SEALED_FIELDS = ["knows", "secret", "goalMain", "goalExtra", "goalMini", "abilityName", "abilityText"];
   const pub = window.BLACKTHORN_PUBLIC;
   const form = document.querySelector("#login-form");
-  const accountSelect = document.querySelector("#login-account");
   const passwordInput = document.querySelector("#login-password");
   const error = document.querySelector("#login-error");
   const sessionActions = document.querySelector("#session-actions");
   const sessionName = document.querySelector("#session-name");
 
   if (!form) return;
-  if (!pub) {
+  if (!pub || !pub.login) {
     error.textContent = "Дані досьє не знайдено. Запустіть node scripts/build.mjs.";
     return;
   }
@@ -34,6 +33,15 @@
       base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
     const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: fromB64(box.iv) }, key, fromB64(box.ct));
     return JSON.parse(new TextDecoder().decode(plain));
+  }
+
+  // Finds whose password this is. Must match loginTag in scripts/build.mjs.
+  async function accountFor(password) {
+    const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(normalizeKey(password)), "PBKDF2", false, ["deriveBits"]);
+    const bits = await crypto.subtle.deriveBits(
+      { name: "PBKDF2", salt: fromB64(pub.login.salt), iterations: pub.login.iter, hash: "SHA-256" }, base, 128);
+    const tag = btoa(String.fromCharCode(...new Uint8Array(bits)));
+    return pub.login.tags[tag] || null;
   }
 
   function loadScript(src) {
@@ -59,7 +67,7 @@
   async function signIn(account, box, password) {
     if (account === "admin") {
       const d = await decrypt(box, password);
-      return { build: pub.build, account, role: "admin", characters: d.characters, host: d.host, seals: d.seals || {}, guests: d.guests };
+      return { build: pub.build, account, role: "admin", characters: d.characters, host: d.host, seals: d.seals || {}, guests: d.guests, voting: d.voting || null, verdict: d.verdict || null };
     }
     const { guests, ...character } = await decrypt(box.open, password);
     return { build: pub.build, account, role: "player", character, guests, sealedBox: box.sealed, unsealed: !box.sealed };
@@ -67,10 +75,19 @@
 
   function pageData(s) {
     const guests = s.guests || { list: [], notes: {} };
+    const voting = {
+      candidates: (guests.list || []).filter(g => !g.victim),
+      letters: Object.fromEntries(["voting", "verdict"].map(kind => [kind, {
+        ballot: s[kind] || null,
+        available: !!pub[kind],
+        unlock: code => unlockLetter(kind, code)
+      }]))
+    };
     if (s.role === "admin") {
       return {
         role: "admin", characters: s.characters, host: s.host, invitation: pub.invitation, seals: s.seals,
-        guests: { list: guests.list, notes: guests.notes, viewer: null, canPick: true }
+        guests: { list: guests.list, notes: guests.notes, viewer: null, canPick: true },
+        voting: { ...voting, voter: null }
       };
     }
     return {
@@ -79,8 +96,18 @@
       host: { sections: [] },
       invitation: pub.invitation,
       sealedIds: s.unsealed ? [] : [s.account],
-      guests: { list: guests.list, notes: { [s.account]: guests.notes }, viewer: s.account, canPick: false }
+      guests: { list: guests.list, notes: { [s.account]: guests.notes }, viewer: s.account, canPick: false },
+      voting: { ...voting, voter: { id: s.account, name: s.character.name, player: s.character.player } }
     };
+  }
+
+  // Opens a sealed envelope ("voting" or "verdict"). Throws if the code is wrong.
+  // The opened ballot stays in this tab's session like the rest of the data.
+  async function unlockLetter(kind, code) {
+    const ballot = await decrypt(pub[kind], code);
+    session[kind] = ballot;
+    saveSession();
+    return ballot;
   }
 
   function saveSession() {
@@ -95,19 +122,8 @@
     window.initHost();
     window.initInvite();
     window.initGuests();
+    window.initVoting();
     activate(s.account);
-  }
-
-  function addOption(value, label) {
-    const option = document.createElement("option");
-    option.value = value;
-    option.textContent = label;
-    accountSelect.appendChild(option);
-  }
-
-  function populateAccounts() {
-    addOption("admin", "Ведуча / адміністратор");
-    pub.accounts.forEach(a => addOption(a.id, a.name));
   }
 
   function accountName(account) {
@@ -146,22 +162,31 @@
     }
   }
 
+  function wrongPassword() {
+    error.textContent = "Такого пароля немає в книзі гостей. Перевірте його й спробуйте ще раз.";
+    form.classList.remove("shake");
+    void form.offsetWidth;
+    form.classList.add("shake");
+    passwordInput.select();
+  }
+
   form.addEventListener("submit", async event => {
     event.preventDefault();
-    const account = accountSelect.value;
-    if (!isKnown(account)) return;
+    if (!passwordInput.value.trim()) return;
     const submit = form.querySelector('[type="submit"]');
     submit.disabled = true;
+    form.classList.add("busy");
     error.textContent = "";
 
     let s;
     try {
+      const account = await accountFor(passwordInput.value);
+      if (!account || !isKnown(account)) { wrongPassword(); return; }
       const box = await loadBox(account);
       try {
         s = await signIn(account, box, passwordInput.value);
-      } catch (wrongPassword) {
-        error.textContent = "Невірний пароль.";
-        passwordInput.select();
+      } catch (wrong) {
+        wrongPassword();
         return;
       }
     } catch (loadError) {
@@ -169,6 +194,7 @@
       return;
     } finally {
       submit.disabled = false;
+      form.classList.remove("busy");
     }
 
     passwordInput.value = "";
@@ -209,8 +235,6 @@
     window.location.hash = "";
     window.location.reload();
   });
-
-  populateAccounts();
 
   let saved = null;
   try { saved = JSON.parse(sessionStorage.getItem(SESSION_KEY)); } catch (ignored) {}
