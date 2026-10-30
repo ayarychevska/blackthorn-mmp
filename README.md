@@ -63,4 +63,4 @@ To change a code, edit `voting.verdictCode` or `voting.code` and run the build a
 
 ## Editing and backups
 
-Card and invitation edits made in admin mode are saved only in that browser's local storage. The three host tabs are read-only and always show the text from `data.js`. To make a change permanent, edit `data.js`, then run the build and redeploy.
+Card and invitation edits made in admin mode are saved only in that browser's local storage, and only until the next build: after `node scripts/build.mjs` the site drops them and shows `data.js` again. The three host tabs are read-only and always show the text from `data.js`. To make a change permanent, edit `data.js`, then run the build and redeploy.

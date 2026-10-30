@@ -3,6 +3,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Blackthorn Mystery — Персонажі</title>
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png?v=2">
+<link rel="icon" type="image/png" sizes="64x64" href="img/favicon-64.png?v=2">
+<link rel="icon" type="image/png" sizes="192x192" href="img/icon-192.png?v=2">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png?v=2">
+<meta name="theme-color" content="#22070e">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&amp;family=Cormorant+SC:wght@500;600;700&amp;family=Great+Vibes&amp;display=swap" rel="stylesheet">
@@ -345,6 +350,7 @@ window.initCards = () => {
   const tpl = $("#card-tpl");
   const form = $("#editor");
   const isPlayer = window.BLACKTHORN_DATA.role !== "admin";
+  const BUILD = (window.BLACKTHORN_PUBLIC || {}).build || "";
   const seals = window.BLACKTHORN_DATA.seals || {};
   const sealedIds = new Set(window.BLACKTHORN_DATA.sealedIds || []);
   const embedded = readEmbedded();
@@ -391,11 +397,18 @@ window.initCards = () => {
     catch (e) { return { version: DB_VERSION, characters: [] }; }
   }
 
+  // Edits made in this browser are only kept until the next build: after a rebuild, data.js wins.
   function loadDb() {
     if (isPlayer) return JSON.parse(JSON.stringify(embedded));
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      const parsed = saved && normalizeDb(JSON.parse(saved));
+      const raw = saved && JSON.parse(saved);
+      if (raw && raw.build !== BUILD) {
+        localStorage.removeItem(STORAGE_KEY);
+        setTimeout(() => toast("Картки оновлено з data.js. Старі правки з цього браузера відкинуто.", 6000), 400);
+        return JSON.parse(JSON.stringify(embedded));
+      }
+      const parsed = raw && normalizeDb(raw);
       if (parsed) {
         const missing = embedded.characters.filter(e => !parsed.characters.some(c => c.id === e.id)).length;
         if (missing) {
@@ -410,7 +423,7 @@ window.initCards = () => {
   function persist() {
     if (isPlayer) return true;
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(db));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...db, build: BUILD }));
       return true;
     } catch (e) {
       toast("Браузер не дозволив зберегти зміни.");
@@ -1097,8 +1110,17 @@ window.initInvite = () => {
     return d;
   }
   const embedded = (() => { try { return normalize(window.BLACKTHORN_DATA.invitation); } catch (e) { return normalize({}); } })();
+  const BUILD = (window.BLACKTHORN_PUBLIC || {}).build || "";
+  // Edits made in this browser are only kept until the next build: after a rebuild, data.js wins.
   let data = (() => {
-    try { const s = localStorage.getItem(INVITE_KEY); if (s) return normalize(JSON.parse(s)); } catch (e) {}
+    try {
+      const s = localStorage.getItem(INVITE_KEY);
+      if (s) {
+        const d = JSON.parse(s);
+        if (d && d.build === BUILD) return normalize(d);
+        localStorage.removeItem(INVITE_KEY);
+      }
+    } catch (e) {}
     return clone(embedded);
   })();
 
@@ -1106,7 +1128,7 @@ window.initInvite = () => {
   function save(now) {
     clearTimeout(saveTimer);
     const run = () => {
-      try { localStorage.setItem(INVITE_KEY, JSON.stringify(data)); }
+      try { localStorage.setItem(INVITE_KEY, JSON.stringify({ ...data, build: BUILD })); }
       catch (e) { toast("Браузер не дозволив зберегти зміни."); }
     };
     if (now) run(); else saveTimer = setTimeout(run, 300);

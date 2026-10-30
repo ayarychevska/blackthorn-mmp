@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="only light">
+<title>The Blackthorn Gazette</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@700;900&family=UnifrakturMaguntia&display=swap" rel="stylesheet">
+
+<script>
+/*
+  ГАЗЕТА НАСТУПНОГО РАНКУ — дані.
+
+  ЯК ПУБЛІКУВАТИ:
+  - Поки "published": false, сторінка показує заглушку «Друкарня ще працює».
+  - Переглянути газету до публікації: відкрити gazette.html?preview
+  - Уранці заповнити поля, поставити "published": true, закомітити й запушити.
+
+  УВАГА: цей файл публічний, як і весь сайт. До вечірки тут не має бути жодних спойлерів.
+  Нижче — приклад-заповнювач без розгадки. Усе замінити своїм.
+
+  ПРАВИЛА (як у сценарії):
+  - Текст лише в подвійних лапках "...". Новий рядок — \n, новий абзац — \n\n.
+  - Цитати всередині тексту — ялинки «». **жирний** працює в усіх текстах.
+  - Після кожного елемента списку — кома, крім останнього.
+  - Порожній список [] — секція не показується.
+*/
+window.GAZETTE = {
+  "published": false,
+
+  "issue": "№ 1",
+  "date": "Четвер, 1 листопада 1894 року",
+  "price": "Ціна — один пенні",
+
+  "headline": "Трагедія в Блекторн-Хол",
+  "subhead": "Власника верфей знайдено мертвим у власному кабінеті. Присяжні винесли вирок ще до світанку",
+
+  /* Головна стаття. byline — підпис автора (уранці можна поставити псевдонім Шарлотти). */
+  "article": {
+    "byline": "Від нашого кореспондента",
+    "body": "Учора ввечері, у переддень Дня всіх святих, маєток Блекторн-Хол чекав гостей на вечерю. О шостій пробив гонг, але господар до столу не вийшов.\n\nТут буде розповідь про вечір: хто кого звинувачував, які таємниці випливли і як змінювалися підозри від раунду до раунду.\n\nДругий і третій абзаци — найкращі моменти вечора, сварки, зізнання і несподіванки. Чим більше конкретних сцен, тим веселіше гостям буде впізнавати себе."
+  },
+
+  /* Вирок присяжних. count — скільки голосів отримав персонаж.
+     "correct": true — позначити справжнього вбивцю (лише вранці!). */
+  "verdict": {
+    "title": "Вирок присяжних",
+    "note": "Голоси дев’яти присяжних, зібрані до відкриття заповіту.",
+    "votes": [
+      { "name": "Arthur Blackthorn", "count": 3 },
+      { "name": "Laurence Blackthorn", "count": 2 },
+      { "name": "Julian Veil", "count": 2 },
+      { "name": "Arven Ren", "count": 1 },
+      { "name": "Charlotte Whitmore", "count": 1 }
+    ],
+    "summary": "Тут — один-два рядки про те, хто розгадав правду."
+  },
+
+  /* Нагороди з «Запечатаного листа». */
+  "nominations": [
+    { "icon": "🗡️", "title": "Вбивця в душі", "winner": "Ім’я персонажа", "note": "За що саме — одним рядком." },
+    { "icon": "🗝️", "title": "Ідеальне алібі", "winner": "Ім’я персонажа", "note": "" },
+    { "icon": "🐟", "title": "Червоний оселедець", "winner": "Ім’я персонажа", "note": "" },
+    { "icon": "🐍", "title": "Найотруйніший язик", "winner": "Ім’я персонажа", "note": "" },
+    { "icon": "🎭", "title": "Гардероб Блекторнів", "winner": "Ім’я персонажа", "note": "" },
+    { "icon": "👑", "title": "Спадкоємець хаосу", "winner": "Ім’я персонажа", "note": "" }
+  ],
+
+  /* Світська хроніка: прізвиська від кореспондентки. */
+  "society": [
+    { "nick": "Прізвисько", "name": "Ім’я персонажа" },
+    { "nick": "Прізвисько", "name": "Ім’я персонажа" }
+  ],
+
+  /* Почуто за столом: фрази без авторів. */
+  "quotes": [
+    "Перша фраза вечора, яку варто зберегти.",
+    "Друга фраза.",
+    "Третя фраза."
+  ],
+
+  /* Через десять років: епілоги гостей. */
+  "epilogue": [
+    { "name": "Ім’я персонажа", "text": "Що сталося з персонажем через десять років." }
+  ],
+
+  /* Дрібні оголошення. */
+  "ads": [
+    { "title": "Потрібна дворецька", "text": "Досвід роботи з покійниками вітається. Звертатися до Блекторн-Хол." },
+    { "title": "Сеанси з потойбічним світом", "text": "Покійний сам вас знайде і скаже щось важливе про груші. Тлумачення — за окрему плату." },
+    { "title": "Шукаю свідків", "text": "Які нічого не бачили. Оплата щедра. Писати до редакції, анонімно." },
+    { "title": "Продається пістолет", "text": "Недорого, без позначок, без питань. Звертатися до Л." },
+    { "title": "Юридичні послуги Н. Ешворда", "text": "Чесність, точність, конфіденційність. Документи, що заважають, спалюємо безкоштовно." },
+    { "title": "Страхова компанія «Обачність»", "text": "Нагадує: поліс покриває нещасні випадки, але не ентузіазм вашого лікаря." },
+  ],
+
+  /* Світлини: src — шлях до фото (публічні!), caption — підпис. */
+  "photos": []
+};
+</script>
+
+<style>
+:root {
+  --paper: #ece4cf;
+  --paper-deep: #d8cbab;
+  --desk: #2b2420;
+  --ink: #16130f;
+  --ink-soft: #4a4236;
+  --rule: #1f1a14;
+  --blood: #7a1d19;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .3  0 0 0 0 .22  0 0 0 0 .12  .16 0 0 0 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* large soft blotches: newsprint never takes ink or age evenly */
+  --mottle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.005' numOctaves='3' seed='7' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5  0 0 0 0 .36  0 0 0 0 .16  .34 0 0 0 -.1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23m)'/%3E%3C/svg%3E");
+  --headline: "Playfair Display", "Old Standard TT", Georgia, serif;
+  color-scheme: light;
+}
+
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+*, *::before, *::after { box-sizing: inherit; }
+
+/* The page lies on a dark desk like a real sheet of newsprint */
+body {
+  margin: 0;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgb(255 255 255 / 6%), transparent 60%),
+    var(--desk);
+  color: var(--ink);
+  font-family: "Old Standard TT", Georgia, "Times New Roman", serif;
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+}
+
+.sheet {
+  max-width: 1120px;
+  margin: 2rem auto 3rem;
+  padding: 1.6rem clamp(1rem, 4vw, 2.6rem) 2.2rem;
+  background:
+    /* the fold across the middle */
+    linear-gradient(to bottom, transparent calc(50% - 2px), rgb(0 0 0 / 8%) 50%, rgb(255 255 255 / 22%) calc(50% + 1px), transparent calc(50% + 4px)),
+    /* yellowed edges and a few foxing stains */
+    radial-gradient(ellipse at 50% 45%, transparent 55%, rgb(120 85 35 / 24%) 100%),
+    radial-gradient(circle at 88% 7%, rgb(140 100 40 / 10%), transparent 9%),
+    radial-gradient(circle at 6% 78%, rgb(140 100 40 / 8%), transparent 7%),
+    var(--mottle) 0 0 / 100% 100% no-repeat,
+    var(--grain),
+    var(--paper);
+  box-shadow: inset 0 0 50px rgb(110 75 25 / 16%), 0 1px 2px rgb(0 0 0 / 35%), 0 22px 60px rgb(0 0 0 / 55%);
+}
+
+/* ---------- Masthead ---------- */
+.masthead { text-align: center; }
+.masthead h1 {
+  font-family: "UnifrakturMaguntia", "Old Standard TT", serif;
+  font-weight: 400;
+  font-size: clamp(2.6rem, 10.5vw, 6.8rem);
+  line-height: .95;
+  margin: .1rem 0 .15rem;
+  letter-spacing: .005em;
+  text-shadow: 0 0 1px rgb(0 0 0 / 22%);
+}
+/* "Ears": an engraved Blackthorn crest on each side of the nameplate */
+@media (min-width: 900px) {
+  .masthead h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.6rem;
+    font-size: 5.2rem;
+  }
+  .masthead h1::before,
+  .masthead h1::after {
+    content: "";
+    flex: none;
+    width: 5.4rem;
+    aspect-ratio: 1;
+    background: url("img/gazette-crest.png") center / contain no-repeat;
+    filter: grayscale(1) sepia(.4) contrast(1.5) brightness(.7);
+    mix-blend-mode: multiply;
+  }
+}
+.masthead .tagline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .9rem;
+  margin: .2rem 0 .9rem;
+  color: var(--ink-soft);
+  font-style: italic;
+}
+.masthead .tagline::before,
+.masthead .tagline::after { content: ""; flex: 0 1 8rem; border-top: 1px solid var(--rule); }
+
+/* Dateline between thick-and-thin rules */
+.dateline {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1rem;
+  margin: 6px 0;
+  padding: .32rem .1rem .28rem;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  font-size: .82rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.dateline::before,
+.dateline::after { content: ""; position: absolute; left: 0; right: 0; border-top: 3px solid var(--rule); }
+.dateline::before { top: -7px; }
+.dateline::after { bottom: -7px; }
+.dateline span:first-child { text-align: left; }
+.dateline span:last-child { text-align: right; }
+
+/* ---------- Headline ---------- */
+.headline {
+  text-align: center;
+  margin: 1.7rem 0 1.4rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 3px double var(--rule);
+}
+.headline h2 {
+  font-family: var(--headline);
+  font-weight: 900;
+  font-size: clamp(1.9rem, 6.2vw, 4.1rem);
+  line-height: 1;
+  letter-spacing: .01em;
+  text-transform: uppercase;
+  margin: 0 0 .85rem;
+  text-shadow: 0 0 1px rgb(0 0 0 / 18%);
+}
+.headline p {
+  position: relative;
+  max-width: 40rem;
+  margin: 0 auto;
+  padding-top: .85rem;
+  color: var(--ink-soft);
+  font-size: clamp(1.05rem, 2.2vw, 1.3rem);
+  font-style: italic;
+  line-height: 1.35;
+}
+/* A printer's fleuron between two short rules */
+.headline p::before {
+  content: "❦";
+  content: "❦" / "";
+  position: absolute;
+  top: -.62em;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0 3.4rem;
+  color: var(--ink);
+  font-size: 1.05rem;
+  font-style: normal;
+  line-height: 1;
+  background:
+    linear-gradient(var(--rule), var(--rule)) left center / 2.7rem 1px no-repeat,
+    linear-gradient(var(--rule), var(--rule)) right center / 2.7rem 1px no-repeat;
+}
+
+/* ---------- Front page: article + verdict ---------- */
+.front {
+  display: grid;
+  grid-template-columns: minmax(0, 2.2fr) minmax(0, 1fr);
+  gap: 2.8rem;
+}
+.front.solo { grid-template-columns: minmax(0, 1fr); }
+/* The verdict is set as a boxed insert on slightly darker stock */
+.front > aside {
+  align-self: start;
+  padding: .9rem 1.1rem 1.1rem;
+  background: rgb(120 90 40 / 7%);
+  border: 3px double var(--rule);
+}
+.front > aside h3 { border-top: 0; padding-top: .1rem; }
+
+.article .byline {
+  margin: 0 0 .9rem;
+  padding-bottom: .45rem;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-soft);
+  font-size: .9rem;
+  font-variant: small-caps;
+  letter-spacing: .08em;
+  text-align: center;
+}
+.article .body {
+  column-gap: 1.6rem;
+  column-rule: 1px solid var(--rule);
+  font-size: 1rem;
+  line-height: 1.5;
+  text-align: justify;
+  hyphens: auto;
+}
+/* Newspaper paragraphs: indented, no gaps */
+.article .body p { margin: 0; text-indent: 1.4em; }
+.article .body p:first-child { text-indent: 0; }
+.article .body p:first-child::first-line { font-variant: small-caps; letter-spacing: .04em; }
+/* A framed initial: paper-white letter on a black block with a fine inner rule */
+.article .body p:first-child::first-letter {
+  float: left;
+  margin: .1em .5rem 0 0;
+  padding: .16em .18em .1em;
+  color: var(--paper);
+  background: var(--ink);
+  border: 4px double var(--paper);
+  font-family: var(--headline);
+  font-size: 3.4em;
+  font-weight: 900;
+  line-height: .78;
+}
+
+/* ---------- Section heads ---------- */
+.section h3 {
+  margin: 0 0 .8rem;
+  padding: .45rem 0 .38rem;
+  border-top: 3px double var(--rule);
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--headline);
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-align: center;
+  text-transform: uppercase;
+}
+.section h3::before,
+.section h3::after {
+  content: "✦";
+  content: "✦" / "";
+  display: inline-block;
+  margin: 0 .7em;
+  font-size: .62em;
+  letter-spacing: 0;
+  vertical-align: .2em;
+}
+.section .note { margin: 0 0 .9rem; color: var(--ink-soft); font-size: .92rem; font-style: italic; text-align: center; }
+
+/* ---------- Verdict: tally marks ---------- */
+.verdict ol { list-style: none; margin: 0; padding: 0; }
+.verdict li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: .5rem;
+  padding: .55rem 0;
+  border-bottom: 1px dotted var(--rule);
+}
+.verdict .who { font-weight: 700; font-variant: small-caps; letter-spacing: .03em; }
+.verdict .tally { display: flex; flex-wrap: wrap; gap: .3rem; justify-content: flex-end; color: var(--ink); }
+.verdict .tally svg { height: 1.4rem; width: auto; }
+.verdict li.truth .who::after {
+  content: "справжній убивця";
+  display: block;
+  font-weight: 400;
+  font-style: italic;
+  font-variant: normal;
+  font-size: .85rem;
+  color: var(--blood);
+}
+.verdict li.truth .tally { color: var(--blood); }
+.verdict .summary { margin: .9rem 0 0; font-size: .97rem; text-align: justify; hyphens: auto; }
+.verdict .summary p { margin: 0; text-indent: 1.2em; }
+.verdict .summary p:first-child { text-indent: 0; }
+
+/* ---------- Lower part: columns divided by hairline rules ---------- */
+.lower {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2.2rem 2.6rem;
+  margin-top: 2.2rem;
+  padding-top: 1.5rem;
+  border-top: 3px double var(--rule);
+  overflow: hidden;
+}
+.lower > .section { position: relative; }
+/* A rule left of every column; the one at the page edge falls outside and is clipped */
+.lower > .section::before { content: ""; position: absolute; top: 0; bottom: 0; left: -1.3rem; border-left: 1px solid var(--rule); }
+.lower .section.wide { grid-column: 1 / -1; }
+.lower .section.wide::before { display: none; }
+
+.awards { list-style: none; margin: 0; padding: 0; }
+.awards li { padding: .55rem 0; border-bottom: 1px dotted var(--rule); text-align: center; }
+.awards .t { display: block; color: var(--ink-soft); font-size: .92rem; font-style: italic; filter: grayscale(1); }
+.awards .w { display: block; font-size: 1.12rem; font-variant: small-caps; font-weight: 700; letter-spacing: .03em; }
+.awards .n { display: block; font-size: .92rem; }
+
+.society p { margin: 0 0 .6rem; }
+.society b { font-style: italic; }
+
+.quotes blockquote {
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  font-style: italic;
+  line-height: 1.4;
+  text-align: center;
+}
+.quotes blockquote + blockquote::before {
+  content: "❦";
+  display: block;
+  margin-bottom: .6rem;
+  color: var(--ink-soft);
+  font-style: normal;
+}
+
+.epilogue { column-gap: 2.6rem; column-rule: 1px solid var(--rule); }
+.epilogue h3 { column-span: all; }
+.epilogue p { margin: 0 0 .7rem; text-align: justify; hyphens: auto; break-inside: avoid; }
+.epilogue p b { font-variant: small-caps; letter-spacing: .03em; }
+
+/* Photographs printed as a halftone */
+.photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.25rem; }
+.photos figure { position: relative; margin: 0; }
+.photos figure::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  aspect-ratio: 3 / 4;
+  pointer-events: none;
+  background: radial-gradient(circle, rgb(0 0 0 / 35%) .7px, transparent 1.1px) 0 0 / 3px 3px;
+  mix-blend-mode: multiply;
+  opacity: .45;
+}
+.photos img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border: 1px solid var(--rule);
+  filter: grayscale(1) sepia(.3) contrast(1.15) brightness(.95);
+}
+.photos figcaption { margin-top: .35rem; font-size: .88rem; font-style: italic; text-align: center; }
+
+/* ---------- Small advertisements, each set in its own style ---------- */
+.ads { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: .9rem; }
+.ads .ad { padding: .8rem .9rem .9rem; border: 1px solid var(--rule); text-align: center; }
+.ads .ad b {
+  display: block;
+  margin-bottom: .4rem;
+  padding-bottom: .35rem;
+  border-bottom: 1px solid currentColor;
+  font-family: var(--headline);
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: .04em;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+.ads .ad span { font-size: .92rem; line-height: 1.4; }
+.ads .ad:nth-child(3n+1) { border: 3px double var(--rule); }
+.ads .ad:nth-child(3n+2) { border-width: 3px 0; }
+.ads .ad:nth-child(3n+2) b { font-family: "Old Standard TT", serif; font-size: 1.2rem; font-style: italic; font-weight: 700; letter-spacing: 0; text-transform: none; border-bottom-style: dotted; }
+.ads .ad:nth-child(3n) b { font-variant: small-caps; text-transform: none; letter-spacing: .08em; font-size: 1.1rem; border: 0; }
+/* The printer's pointing hand, a staple of Victorian small ads */
+.ads .ad:nth-child(3n) b::before { content: "☞ "; content: "☞ " / ""; font-variant: normal; }
+/* Every fourth one printed white on black, as a reverse block */
+.ads .ad:nth-child(4n) { color: var(--paper); background: var(--ink); border-color: var(--ink); }
+
+/* A row of printer's ornaments above the imprint */
+footer::before {
+  content: "❦   ✦   ❦";
+  content: "❦   ✦   ❦" / "";
+  position: absolute;
+  top: -2.1rem;
+  left: 0;
+  right: 0;
+  color: var(--ink-soft);
+  font-size: 1rem;
+  letter-spacing: .4em;
+  text-transform: none;
+  white-space: pre;
+}
+footer {
+  position: relative;
+  margin-top: 3.6rem;
+  padding: .5rem 0 .45rem;
+  border-top: 3px double var(--rule);
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-soft);
+  font-size: .82rem;
+  letter-spacing: .08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* Placeholder before publication */
+.press {
+  max-width: 30rem;
+  margin: 3rem auto 1rem;
+  text-align: center;
+}
+.press p { margin: 0 0 .4rem; font-size: 1.25rem; font-style: italic; }
+.press p:first-child::before {
+  content: "❦";
+  display: block;
+  margin-bottom: .8rem;
+  color: var(--ink-soft);
+  font-size: 1.6rem;
+  font-style: normal;
+}
+
+.preview-flag {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + .6rem);
+  right: .6rem;
+  z-index: 10;
+  padding: .15rem .55rem;
+  border: 1px solid var(--blood);
+  color: var(--blood);
+  background: var(--paper);
+  font-size: .85rem;
+  font-style: italic;
+}
+
+@media (min-width: 760px) {
+  .article .body { column-count: 2; }
+  .lower .epilogue { column-count: 2; }
+}
+@media (max-width: 900px) {
+  .front { grid-template-columns: minmax(0, 1fr); gap: 1.8rem; }
+  .lower { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+@media (max-width: 600px) {
+  .sheet { margin: 0; box-shadow: none; }
+  .lower { grid-template-columns: minmax(0, 1fr); }
+  .lower > .section::before { display: none; }
+  .dateline { grid-template-columns: 1fr; text-align: center; gap: .1rem; }
+  .dateline span:first-child, .dateline span:last-child { text-align: center; }
+  .article .body { text-align: left; }
+}
+@media print {
+  body { background: #fff; color: #000; }
+  .sheet { margin: 0; box-shadow: none; background: #fff; }
+  .preview-flag { display: none; }
+}
+</style>
+</head>
+<body>
+<main class="sheet" id="gazette"></main>
+
+<script>
+(function () {
+  var D = window.GAZETTE || {};
+  var root = document.getElementById("gazette");
+  var preview = new URLSearchParams(location.search).has("preview");
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function inline(s) {
+    return esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\n/g, "<br>");
+  }
+  function paras(s) {
+    return String(s || "").split(/\n\s*\n/).filter(function (p) { return p.trim(); })
+      .map(function (p) { return "<p>" + inline(p.trim()) + "</p>"; }).join("");
+  }
+  function list(a) { return Array.isArray(a) ? a.filter(Boolean) : []; }
+
+  // Рахунок рисками: групи по п'ять, п'ята перекреслює чотири.
+  function tally(n) {
+    n = Math.max(0, Math.floor(Number(n) || 0));
+    var out = "", tilt = [-3, 2, -1, 3];
+    function lines(k) {
+      var g = "";
+      for (var i = 0; i < k; i++) {
+        var x = 5 + i * 7;
+        g += '<line x1="' + (x + tilt[i] * .3) + '" y1="3" x2="' + (x - tilt[i] * .3) + '" y2="25"/>';
+      }
+      return g;
+    }
+    for (var full = Math.floor(n / 5); full > 0; full--) {
+      out += '<svg viewBox="0 0 34 28" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+        lines(4) + '<line x1="1" y1="21" x2="31" y2="7"/></svg>';
+    }
+    var rem = n % 5;
+    if (rem) {
+      out += '<svg viewBox="0 0 ' + (rem * 7 + 3) + ' 28" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+        lines(rem) + "</svg>";
+    }
+    return out;
+  }
+
+  function masthead() {
+    return '<header class="masthead">' +
+      "<h1>The Blackthorn Gazette</h1>" +
+      '<p class="tagline">Новини, плітки та вироки графства</p>' +
+      '<div class="dateline"><span>' + esc(D.issue) + "</span><span>" + esc(D.date) +
+      "</span><span>" + esc(D.price) + "</span></div>" +
+      "</header>";
+  }
+
+  if (!D.published && !preview) {
+    document.title = "The Blackthorn Gazette";
+    root.innerHTML = masthead() +
+      '<div class="press"><p>Друкарня ще працює.</p><p>Свіжий номер — уранці.</p></div>';
+    return;
+  }
+
+  var html = masthead();
+  if (preview && !D.published) html += '<div class="preview-flag">Перегляд, не опубліковано</div>';
+
+  if (D.headline || D.subhead) {
+    html += '<section class="headline"><h2>' + inline(D.headline) + "</h2>" +
+      (D.subhead ? "<p>" + inline(D.subhead) + "</p>" : "") + "</section>";
+  }
+
+  var art = D.article || {};
+  var v = D.verdict || {};
+  var votes = list(v.votes).slice().sort(function (a, b) { return (b.count || 0) - (a.count || 0); });
+
+  var front = "";
+  if (art.body) {
+    front += '<article class="article">' +
+      (art.byline ? '<p class="byline">' + inline(art.byline) + "</p>" : "") +
+      '<div class="body">' + paras(art.body) + "</div></article>";
+  }
+  if (votes.length) {
+    front += '<aside class="section verdict"><h3>' + inline(v.title || "Вирок присяжних") + "</h3>" +
+      (v.note ? '<p class="note">' + inline(v.note) + "</p>" : "") +
+      "<ol>" + votes.map(function (r) {
+        var c = Number(r.count) || 0;
+        return '<li class="' + (r.correct ? "truth" : "") + '"><span class="who">' + inline(r.name) +
+          '</span><span class="tally" role="img" aria-label="' + c + ' голос.">' + tally(c) + "</span></li>";
+      }).join("") + "</ol>" +
+      (v.summary ? '<div class="summary">' + paras(v.summary) + "</div>" : "") +
+      "</aside>";
+  }
+  if (front) {
+    html += '<div class="front' + (art.body && votes.length ? "" : " solo") + '">' + front + "</div>";
+  }
+
+  var lower = "";
+  var noms = list(D.nominations);
+  if (noms.length) {
+    lower += '<section class="section"><h3>Нагороди вечора</h3><ul class="awards">' +
+      noms.map(function (n) {
+        return "<li>" + '<span class="t">' + esc(n.icon ? n.icon + " " : "") + inline(n.title) + "</span>" +
+          '<span class="w">' + inline(n.winner) + "</span>" +
+          (n.note ? '<span class="n">' + inline(n.note) + "</span>" : "") + "</li>";
+      }).join("") + "</ul></section>";
+  }
+
+  var soc = list(D.society);
+  var quotes = list(D.quotes);
+  if (soc.length) {
+    lower += '<section class="section society"><h3>Світська хроніка</h3>' +
+      '<p class="note">Наша кореспондентка просить не ображатися.</p>' +
+      soc.map(function (s) { return "<p><b>" + inline(s.nick) + "</b> — " + inline(s.name) + "</p>"; }).join("") +
+      "</section>";
+  }
+  if (quotes.length) {
+    lower += '<section class="section quotes"><h3>Почуто за столом</h3>' +
+      quotes.map(function (q) { return "<blockquote>«" + inline(q) + "»</blockquote>"; }).join("") +
+      "</section>";
+  }
+
+  var epi = list(D.epilogue);
+  if (epi.length) {
+    lower += '<section class="section epilogue wide"><h3>Через десять років</h3>' +
+      epi.map(function (e) { return "<p><b>" + inline(e.name) + ".</b> " + inline(e.text) + "</p>"; }).join("") +
+      "</section>";
+  }
+
+  var photos = list(D.photos);
+  if (photos.length) {
+    lower += '<section class="section wide"><h3>Світлини вечора</h3><div class="photos">' +
+      photos.map(function (p) {
+        return '<figure><img src="' + esc(p.src) + '" alt="' + esc(p.caption || "") + '" loading="lazy">' +
+          (p.caption ? "<figcaption>" + inline(p.caption) + "</figcaption>" : "") + "</figure>";
+      }).join("") + "</div></section>";
+  }
+
+  var ads = list(D.ads);
+  if (ads.length) {
+    lower += '<section class="section wide"><h3>Оголошення</h3><div class="ads">' +
+      ads.map(function (a) {
+        return '<div class="ad"><b>' + inline(a.title) + "</b><span>" + inline(a.text) + "</span></div>";
+      }).join("") + "</div></section>";
+  }
+
+  if (lower) html += '<div class="lower">' + lower + "</div>";
+  html += "<footer>Друкарня графства. Передруковувати без дозволу редакції заборонено.</footer>";
+
+  root.innerHTML = html;
+})();
+</script>
+</body>
+</html>
